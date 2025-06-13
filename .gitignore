@@ -138,3 +138,5 @@ dmypy.json
 *.wsuo
 *.json
 *.sqlite
+!package.json
+!package-lock.json
