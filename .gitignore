@@ -140,3 +140,4 @@ dmypy.json
 *.sqlite
 !package.json
 !package-lock.json
+!tsconfig.json
