@@ -1,43 +1,54 @@
-# Projeto React com Tailwind CSS
+# React + TypeScript + Vite
 
-Este projeto é uma aplicação React que utiliza o Tailwind CSS para estilização. Abaixo estão as instruções para configurar e executar a aplicação.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Estrutura do Projeto
+Currently, two official plugins are available:
 
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
-Frontend
-├── src
-│   ├── App.tsx
-│   ├── index.tsx
-│   └── styles
-│       └── tailwind.css
-├── public
-│   └── index.html
-├── package.json
-├── tailwind.config.js
-├── postcss.config.js
-└── README.md
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
 ```
-
-## Instruções de Configuração
-
-1. Navegue até a pasta `D:\Sis-Otica\Frontend`.
-2. Execute o seguinte comando para criar um `package.json` básico:
-   ```
-   npm init -y
-   ```
-3. Instale as dependências necessárias com o comando:
-   ```
-   npm install react react-dom tailwindcss postcss autoprefixer
-   ```
-4. Crie os arquivos `tailwind.config.js` e `postcss.config.js` com as configurações apropriadas.
-5. Adicione as importações do Tailwind CSS no arquivo `src/styles/tailwind.css`.
-6. Configure os scripts no `package.json` para iniciar a aplicação.
-7. Execute o seguinte comando para iniciar o servidor de desenvolvimento:
-   ```
-   npm start
-   ```
-
-## Contribuição
-
-Sinta-se à vontade para contribuir com melhorias ou correções. Para isso, faça um fork do repositório e envie um pull request com suas alterações.
