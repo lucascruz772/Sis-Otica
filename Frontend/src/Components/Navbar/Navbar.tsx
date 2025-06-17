@@ -22,85 +22,82 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user }) =
 
     return (
         <nav
+            className="fixed top-0"
             style={{
-                position: "fixed",
-                top: 0,
                 left: minimized ? "80px" : "256px",
                 width: `calc(100% - ${minimized ? "80px" : "256px"})`,
                 height: "80px",
-                background: "#fff",
-                borderBottom: "1px solid #e5e7eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "0 2rem",
                 zIndex: 1200
             }}
         >
-            <button
-                onClick={onMinimizeSidebar}
-                style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1.5rem",
-                    marginRight: "1rem"
-                }}
-                aria-label="Minimizar menu"
-            >
-                <FaBars />
-            </button>
-            <div style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
-                Sis-Ótica
-            </div>
-            <div style={{ position: "relative" }}>
+            <div className="w-full h-full flex items-center justify-between px-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors">
                 <button
-                    onClick={() => setDropdownOpen((open) => !open)}
+                    onClick={onMinimizeSidebar}
+                    className="text-gray-900 dark:text-white"
                     style={{
                         background: "none",
                         border: "none",
-                        display: "flex",
-                        alignItems: "center",
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        fontSize: "1.5rem",
+                        marginRight: "1rem"
                     }}
+                    aria-label="Minimizar menu"
                 >
-                    <FaUserCircle size={36} color="#444" />
-                    <span style={{ marginLeft: 8, fontWeight: 500 }}>
-                        {user?.firstName || "Usuário"}
-                    </span>
-                    {user?.funcao && (
-                        <span style={{
-                            marginLeft: 8,
-                            background: "#17a2b8",
-                            color: "#fff",
-                            borderRadius: 8,
-                            padding: "2px 8px",
-                            fontSize: 12
-                        }}>
-                            {funcaoLabel(user.funcao)}
-                        </span>
-                    )}
-                    <FaChevronDown style={{ marginLeft: 8 }} />
+                    <FaBars className="text-gray-900 dark:text-white" />
                 </button>
-                {dropdownOpen && (
-                    <div
+                <div className="font-bold text-xl text-gray-900 dark:text-white">
+                    Sis-Ótica
+                </div>
+                <div style={{ position: "relative" }}>
+                    <button
+                        onClick={() => setDropdownOpen((open) => !open)}
+                        className="flex items-center text-gray-900 dark:text-white"
                         style={{
-                            position: "absolute",
-                            right: 0,
-                            top: "calc(100% + 8px)",
-                            background: "#fff",
-                            border: "1px solid #e5e7eb",
-                            borderRadius: 8,
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                            minWidth: 160,
-                            zIndex: 1300
+                            background: "none",
+                            border: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            cursor: "pointer"
                         }}
                     >
-                        <a href="/editar-perfil" style={{ display: "block", padding: "10px 16px", color: "#333", textDecoration: "none" }}>Editar Perfil</a>
-                        <div style={{ borderTop: "1px solid #eee" }} />
-                        <a href="/logout" style={{ display: "block", padding: "10px 16px", color: "#c00", textDecoration: "none" }}>Sair</a>
-                    </div>
-                )}
+                        <FaUserCircle size={36} className="text-gray-700 dark:text-white" />
+                        <span className="ml-2 font-medium text-gray-900 dark:text-white">
+                            {user?.firstName || "Usuário"}
+                        </span>
+                        {user?.funcao && (
+                            <span className="ml-2 bg-cyan-600 text-white rounded px-2 py-1 text-xs">
+                                {funcaoLabel(user.funcao)}
+                            </span>
+                        )}
+                        <FaChevronDown className="ml-2 text-gray-900 dark:text-white" />
+                    </button>
+                    {dropdownOpen && (
+                        <div
+                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg text-gray-900 dark:text-white"
+                            style={{
+                                position: "absolute",
+                                right: 0,
+                                top: "calc(100% + 8px)",
+                                minWidth: 160,
+                                zIndex: 1300
+                            }}
+                        >
+                            <a
+                                href="/editar-perfil"
+                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                            >
+                                Editar Perfil
+                            </a>
+                            <div className="border-t border-gray-200 dark:border-gray-700" />
+                            <a
+                                href="/logout"
+                                className="block px-4 py-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            >
+                                Sair
+                            </a>
+                        </div>
+                    )}
+                </div>
             </div>
         </nav>
     );

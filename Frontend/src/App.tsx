@@ -3,7 +3,9 @@ import { Routes, Route } from "react-router-dom"
 import Sidebar from "./Components/Sidebar/Sidebar"
 import Home from "./Components/Home/Home"
 import Clientes from "./Components/Cliente/ClienteList"
+import ClienteCadastro from "./Components/Cliente/ClienteCadastro"
 import Navbar from "./Components/Navbar/Navbar"
+import Pesquisa from "./Components/Pesquisa/Pesquisa";
 
 const App: React.FC = () => {
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
@@ -14,28 +16,26 @@ const App: React.FC = () => {
         onMinimizeSidebar={() => setSidebarMinimized((prev) => !prev)}
         minimized={sidebarMinimized}
       />
-      <div style={{ display: "flex", minHeight: "100vh" }}>
+      <div className="flex min-h-screen">
         <Sidebar minimized={sidebarMinimized} />
         <main
+          className={`
+            flex-1 flex flex-col min-h-screen w-full
+            bg-gray-50 dark:bg-gray-900 transition-colors
+            pt-20
+          `}
           style={{
-            flex: 1,
-            paddingTop: "80px",
-            marginLeft: sidebarMinimized ? "80px" : "256px", // ajuste conforme largura da sidebar
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            background: "#f9f9f9",
-            minHeight: "100vh"
+            marginLeft: sidebarMinimized ? "80px" : "256px",
           }}
         >
-          <div style={{ width: "100%", maxWidth: "1200px" }}>
-            <Routes>
-              <Route path="/" element={<Home onLoginSuccess={function (): void {
-                throw new Error("Function not implemented.")
-              }} />} />
-              <Route path="/clientes" element={<Clientes />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<Home onLoginSuccess={function (): void {
+              throw new Error("Function not implemented.")
+            }} />} />
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/cadastro-cliente" element={<ClienteCadastro />} />
+            <Route path="/pesquisa" element={<Pesquisa />} />
+          </Routes>
         </main>
       </div>
     </>

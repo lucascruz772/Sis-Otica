@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaHome, FaUsers, FaSearch, FaTasks, FaChartBar, FaBoxes, FaCashRegister, FaShoppingCart, FaMoneyCheckAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaUsers, FaSearch, FaTasks, FaChartBar, FaBoxes, FaCashRegister, FaShoppingCart, FaMoneyCheckAlt, FaSignOutAlt } from "react-icons/fa";
 import logo from "./LOGO-NOVA-PRETA .jpg";
 
 const Sidebar: React.FC<{ minimized: boolean }> = ({ minimized }) => {
