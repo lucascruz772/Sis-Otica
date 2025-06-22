@@ -27,14 +27,14 @@ const ClienteCadastro: React.FC = () => {
     };
 
     return (
-        <section className="w-full h-full min-h-[calc(100vh-80px)] flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors px-4">
+        <section className="w-full h-full min-h-[calc(100vh-80px)] flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors px-2 sm:px-4">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white dark:bg-gray-800 shadow-lg rounded-xl py-8 px-4 md:px-8 w-full space-y-6 text-gray-900 dark:text-white mt-8"
+                className="bg-white dark:bg-gray-800 shadow-lg rounded-xl py-6 px-2 sm:py-8 sm:px-4 md:px-8 w-full max-w-2xl mx-auto space-y-6 text-gray-900 dark:text-white mt-4 sm:mt-8"
                 autoComplete="off"
             >
-                <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white text-left">Cadastro de Cliente</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-900 dark:text-white text-left">Cadastro de Cliente</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
                     <div>
                         <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="nome">Nome</label>
                         <input
@@ -165,17 +165,17 @@ const ClienteCadastro: React.FC = () => {
                         />
                     </div>
                 </div>
-                <div className="flex justify-start gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row justify-start gap-3 sm:gap-4 mt-4 sm:mt-6">
                     <button
                         type="submit"
-                        className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                        className="px-4 sm:px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition w-full sm:w-auto"
                     >
                         Salvar
                     </button>
                     <button
                         type="button"
                         onClick={() => navigate("/clientes")}
-                        className="px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                        className="px-4 sm:px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full sm:w-auto"
                     >
                         Cancelar
                     </button>

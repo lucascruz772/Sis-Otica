@@ -6,15 +6,11 @@ import logo from "./LOGO-NOVA-PRETA .jpg";
 const Sidebar: React.FC<{ minimized: boolean }> = ({ minimized }) => {
     return (
         <aside
-            className={`bg-white dark:bg-gray-800 border-r dark:border-gray-700 shadow-lg flex flex-col transition-all duration-300
-            ${minimized ? 'w-20' : 'w-64'} min-h-screen`}
-            style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                zIndex: 1100, // maior que o zIndex da navbar
-                height: "100vh"
-            }}
+            className={`
+                fixed top-0 left-0 h-screen
+                bg-white dark:bg-gray-900 border-r dark:border-gray-700 shadow-lg flex flex-col transition-all duration-300
+                ${minimized ? 'w-20' : 'w-64'}
+            `}
         >
             <div className="p-6 border-b dark:border-gray-700 flex flex-col items-center bg-gray-50 dark:bg-gray-900">
                 <img
@@ -23,7 +19,7 @@ const Sidebar: React.FC<{ minimized: boolean }> = ({ minimized }) => {
                     className={`object-contain transition-all duration-300 ${minimized ? 'h-12' : 'h-28'}`}
                 />
             </div>
-            <nav className="flex-1 px-2 py-4 space-y-0">
+            <nav className="flex-1 px-2 py-4 space-y-0 overflow-y-auto">
                 <SidebarItem minimized={minimized} to="/" icon={<FaHome />} label="Início" />
                 <div className="border-b mx-2 dark:border-gray-700" />
                 <SidebarItem minimized={minimized} to="/clientes" icon={<FaUsers />} label="Clientes" />
