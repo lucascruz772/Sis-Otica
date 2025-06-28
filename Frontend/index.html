@@ -1,13 +1,33 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="./src/Components/Sidebar/LOGO-NOVA-PRETA .jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGO Sistem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Evita flash branco ao iniciar no darkmode
+    try {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (!theme)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) { }
+  </script>
+</head>
+
+<body>
+  <!--
+    Este arquivo HTML é o ponto de entrada do frontend React.
+    Importa a fonte Inter do Google Fonts para uso global via Tailwind.
+    O React monta o app dentro da div #root.
+  -->
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
