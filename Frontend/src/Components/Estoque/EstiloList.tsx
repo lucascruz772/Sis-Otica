@@ -143,12 +143,24 @@ const EstiloList: React.FC = () => {
                 </div>
                 {/* Paginação e botão de voltar */}
                 <div className="flex justify-between items-center gap-2 mt-4">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Voltar
-                    </button>
+                    <div className="mt-4 flex justify-center">
+                        {/* Botão Voltar responsivo */}
+                        <button
+                            className="block sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150 bg-gray-500 text-white hover:bg-gray-700 focus:bg-gray-700"
+                            onClick={() => navigate(-1)}
+                            aria-label="Voltar"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="hidden sm:block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Voltar
+                        </button>
+                    </div>
                     <div className="flex justify-center items-center gap-2 flex-1">
                         <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === 1} onClick={() => setPaginaAtual(paginaAtual - 1)}>{'<'}</button>
                         <span className="text-gray-700 dark:text-gray-300">{paginaAtual} de {totalPaginas}</span>

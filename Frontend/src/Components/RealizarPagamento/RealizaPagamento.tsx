@@ -37,28 +37,28 @@ const ComissaoList: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200 p-4 font-sans">
+        <div className="w-full min-w-0 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200 p-2 sm:p-4 font-sans">
             <h2 className="text-center text-2xl font-bold mb-4">Comissão de Pagamento</h2>
-            <div className="flex justify-end mb-4">
-                <a href="/comissao/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">Nova Comissão</a>
+            <div className="flex flex-col sm:flex-row justify-end mb-4 gap-2">
+                <a href="/comissao/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow w-full sm:w-auto text-center">Nova Comissão</a>
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full table-auto bg-white dark:bg-gray-800 rounded shadow">
+            <div className="overflow-x-auto rounded-lg">
+                <table className="w-full text-xs sm:text-sm md:text-base table-auto bg-white dark:bg-gray-800 rounded shadow min-w-[400px]">
                     <thead>
                         <tr>
-                            <th className="px-4 py-2 border-b text-left">Funcionário</th>
-                            <th className="px-4 py-2 border-b text-left">Valor de vendas</th>
-                            <th className="px-4 py-2 border-b text-left">Data</th>
+                            <th className="px-2 sm:px-4 py-2 border-b text-left">Funcionário</th>
+                            <th className="px-2 sm:px-4 py-2 border-b text-left">Valor de vendas</th>
+                            <th className="px-2 sm:px-4 py-2 border-b text-left">Data</th>
                         </tr>
                     </thead>
                     <tbody>
                         {comissoesMock.map((comissao) => (
                             <tr key={comissao.pk} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <td className="px-4 py-2 border-b">
+                                <td className="px-2 sm:px-4 py-2 border-b whitespace-nowrap">
                                     <a href={`/comissao/${comissao.pk}`} className="text-blue-600 hover:underline">{comissao.colaborador}</a>
                                 </td>
-                                <td className="px-4 py-2 border-b">R$ {comissao.valor_vendas.toLocaleString()}</td>
-                                <td className="px-4 py-2 border-b">{comissao.data_referencia}</td>
+                                <td className="px-2 sm:px-4 py-2 border-b whitespace-nowrap">R$ {comissao.valor_vendas.toLocaleString()}</td>
+                                <td className="px-2 sm:px-4 py-2 border-b whitespace-nowrap">{comissao.data_referencia}</td>
                             </tr>
                         ))}
                     </tbody>

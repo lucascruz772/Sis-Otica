@@ -1,18 +1,8 @@
-// AdicionarCaixa.tsx
-// Tela/formulário para adicionar movimentações ao caixa.
-// Permite lançar entradas/saídas financeiras.
-// Usa mock data, responsivo, dark mode e fonte Inter.
-//
-// Props:
-// - onClose: função chamada ao fechar o modal/formulário.
-//
-// Responsividade garantida com Tailwind: modal centralizado, largura máxima (max-w), padding adaptativo e grid responsivo.
-// Certifique-se de que o formulário se adapta bem em telas pequenas.
-
 import React, { useState } from 'react';
 
 interface AdicionarCaixaProps {
     onClose: () => void;
+    onSuccess?: () => void;
 }
 
 const formasPagamento = [
@@ -29,74 +19,83 @@ const tipos = [
     { value: 'S', label: 'Saída' },
 ];
 
-const AdicionarCaixa: React.FC<AdicionarCaixaProps> = ({ onClose }) => {
-    const [form, setForm] = useState({
-        data: new Date().toISOString().split('T')[0],
-        os: '',
-        valor: '',
-        forma: 'A',
-        tipo: 'E',
-        descricao: '',
-    });
+const AdicionarCaixa: React.FC<AdicionarCaixaProps> = ({ onClose, onSuccess }) => {
+    const [data] = useState(() => new Date().toLocaleDateString('pt-BR'));
+    const [valor, setValor] = useState('');
+    const [forma, setForma] = useState('A');
+    const [tipo, setTipo] = useState('E');
+    const [descricao, setDescricao] = useState('');
+    const [searchOs, setSearchOs] = useState('');
+    const [referencia, setReferencia] = useState('');
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    // Simulação de opções de OS
+    const osOptions = [
+        { value: '', label: 'Os' },
+        { value: '1234', label: 'OS 1234' },
+        { value: '5678', label: 'OS 5678' },
+    ];
+
+    // Máscara simples para valor (R$)
+    function handleValorChange(e: React.ChangeEvent<HTMLInputElement>) {
+        let v = e.target.value.replace(/[^\d]/g, "");
+        v = (Number(v) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        setValor(v);
     }
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        // Aqui você pode adicionar a lógica de envio
-        onClose();
+        if (onSuccess) onSuccess();
+        if (onClose) onClose(); // Fecha o form após adicionar
+        // Aqui você pode integrar com backend
     }
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-lg relative">
-                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800" onClick={onClose}>&times;</button>
-                <h2 className="text-xl font-bold mb-4 text-center">Cadastro Caixa</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="flex flex-wrap gap-4">
-                        <div className="flex-1 min-w-[120px]">
-                            <label className="block text-sm font-medium mb-1">Data</label>
-                            <input
-                                className="form-input w-full bg-white !bg-white dark:!bg-white rounded px-3 py-2 text-black"
-                                type="date"
-                                name="data"
-                                value={form.data}
-                                onChange={handleChange}
-                                required
-                            />
+        <div className="w-full flex justify-start items-start py-8">
+            <div className="w-full max-w-sm sm:max-w-md md:max-w-lg ml-0 sm:ml-8">
+                <div className="text-center mb-4">
+                    <label className="block text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Cadastro Caixa</label>
+                </div>
+                <form className="space-y-3" onSubmit={handleSubmit}>
+                    <div className="flex flex-wrap gap-2">
+                        <div className="flex-1 min-w-[90px]">
+                            <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Data</label>
+                            <input className="form-input w-full bg-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-700 rounded px-2 py-1 text-sm border border-gray-300 dark:border-gray-700" type="text" value={data} name="DATA" id="DATA" readOnly />
                         </div>
                         <div className="flex-1 min-w-[120px]">
-                            <label className="block text-sm font-medium mb-1">Pesquisa OS</label>
-                            <input className="form-input w-full rounded px-3 py-2 text-black" type="text" name="os" value={form.os} onChange={handleChange} placeholder="OS" />
+                            <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Pesquisa OS</label>
+                            <div className="flex gap-1">
+                                <input type="text" id="search_os" name="search_os" className="form-input w-1/2 rounded-l px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" placeholder="Os" value={searchOs} onChange={e => setSearchOs(e.target.value)} />
+                                <select id="os-select" name="REFERENCIA" className="form-input w-1/2 rounded-r px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" value={referencia} onChange={e => setReferencia(e.target.value)}>
+                                    {osOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                            </div>
                         </div>
-                        <div className="flex-1 min-w-[120px]">
-                            <label className="block text-sm font-medium mb-1">Valor</label>
-                            <input className="form-input w-full rounded px-3 py-2 text-black" type="text" name="valor" value={form.valor} onChange={handleChange} placeholder="0,00" required />
+                        <div className="flex-1 min-w-[100px]">
+                            <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Valor</label>
+                            <input required className="form-input w-full rounded px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" maxLength={15} value={valor} onChange={handleValorChange} id="VALOR" name="VALOR" placeholder="R$ 0,00" />
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-wrap gap-2">
                         <div className="flex-1 min-w-[120px]">
-                            <label className="block text-sm font-medium mb-1">Forma Pagamento</label>
-                            <select className="form-select w-full rounded px-3 py-2 text-black" name="forma" value={form.forma} onChange={handleChange} required>
-                                {formasPagamento.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                            <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Forma Pagamento</label>
+                            <select name="FORMA" id="FORMA" className="form-input w-full rounded px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" value={forma} onChange={e => setForma(e.target.value)} required>
+                                {formasPagamento.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                             </select>
                         </div>
-                        <div className="flex-1 min-w-[120px]">
-                            <label className="block text-sm font-medium mb-1">Tipo</label>
-                            <select className="form-select w-full rounded px-3 py-2 text-black" name="tipo" value={form.tipo} onChange={handleChange} required>
-                                {tipos.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                        <div className="flex-1 min-w-[90px]">
+                            <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Tipo</label>
+                            <select id="TIPO" name="TIPO" className="form-input w-full rounded px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" value={tipo} onChange={e => setTipo(e.target.value)} required>
+                                {tipos.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                             </select>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Descrição</label>
-                        <textarea className="form-textarea w-full rounded px-3 py-2 text-black" name="descricao" value={form.descricao} onChange={handleChange} rows={3} required />
+                        <label className="block text-xs font-medium mb-1 text-gray-700 dark:text-gray-200">Descrição</label>
+                        <textarea className="form-input w-full rounded px-2 py-1 text-sm border border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-700" id="DESCRICAO" name="DESCRICAO" rows={3} value={descricao} onChange={e => setDescricao(e.target.value)} required></textarea>
                     </div>
-                    <div className="flex justify-center gap-4 mt-4">
-                        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow">Finalizar</button>
-                        <button type="button" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded" onClick={onClose}>Fechar</button>
+                    <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
+                        <button type="button" className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 rounded px-4 py-2 flex-1" onClick={onClose}>Fechar</button>
+                        <button type="submit" className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white rounded px-4 py-2 flex-1">Finalizar</button>
                     </div>
                 </form>
             </div>

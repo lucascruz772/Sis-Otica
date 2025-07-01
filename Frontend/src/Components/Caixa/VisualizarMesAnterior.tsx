@@ -28,8 +28,24 @@ const VisualizarMesAnterior: React.FC<VisualizarMesAnteriorProps> = ({ onClose }
         <div className={`w-full min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
             <div className={`max-w-5xl mx-auto mt-10 mb-10 rounded-lg shadow-lg border p-8 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                 <div className="flex justify-between items-center mb-4 relative">
+                    {/* Ícone de voltar no mobile */}
                     <button
-                        className={`absolute left-0 top-2 px-3 py-1 rounded font-medium ${isDark ? 'bg-gray-700 text-gray-100 hover:bg-gray-600 focus:bg-gray-600' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:bg-gray-300'}`}
+                        className={`block sm:hidden absolute left-0 top-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150
+                        ${isDark ? 'bg-gray-700 text-gray-100 hover:bg-gray-600 focus:bg-gray-600' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:bg-gray-300'}`}
+                        style={{ position: 'static', marginRight: 'auto', marginBottom: '0.5rem' }}
+                        onClick={() => navigate(-1)}
+                        aria-label="Voltar"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    {/* Botão Voltar textual em telas médias/grandes */}
+                    <button
+                        className={`hidden sm:block absolute left-0 top-2 px-3 py-1 rounded font-medium focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150
+                        min-w-[90px] text-base
+                        ${isDark ? 'bg-gray-700 text-gray-100 hover:bg-gray-600 focus:bg-gray-600' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:bg-gray-300'}`}
+                        style={{ position: 'static', marginRight: 'auto', marginBottom: '0.5rem' }}
                         onClick={() => navigate(-1)}
                         aria-label="Voltar"
                     >

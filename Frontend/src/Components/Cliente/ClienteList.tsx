@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 interface Cliente {
@@ -49,18 +49,18 @@ const clientesMock: Cliente[] = [
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 50, 100];
 
 const SearchBar: React.FC<{ search: string; setSearch: (value: string) => void }> = ({ search, setSearch }) => (
-    <div className="flex items-center gap-4 w-full px-4 pt-4">
+    <div className="flex items-center gap-2 w-full pt-4 sm:gap-4"> {/* gap menor no mobile */}
         <input
             type="search"
             placeholder="Pesquisar por nome..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="w-32 sm:w-64 px-2 sm:px-4 py-1.5 sm:py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs sm:text-base"
             aria-label="Pesquisar clientes"
         />
         <Link
             to="/cadastro-cliente"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="px-3 sm:px-6 py-1.5 sm:py-2 min-w-[100px] sm:min-w-[180px] text-xs sm:text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
         >
             Cadastrar Cliente
         </Link>
@@ -130,85 +130,120 @@ const Clientes: React.FC = () => {
         setCurrentPage(1);
     }, [search, pageSize]);
 
+    // Placeholder para futura integração de API
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/sua-api-aqui');
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+            }
+        };
+        fetchData();
+    }, []);
+
     return (
-        <section className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
-            <div className="w-full flex flex-col flex-1">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 px-4">Clientes</h1>
-                <SearchBar search={search} setSearch={setSearch} />
-                <div className="overflow-auto rounded-lg shadow bg-white dark:bg-gray-800 mt-6">
-                    <table className="min-w-full w-full text-sm text-left text-gray-900 dark:text-white">
-                        <thead>
-                            <tr>
-                                {["Nome", "Logradouro", "Número", "Bairro", "Cidade", "CPF", "Email", "Telefone", "Ação"].map((header) => (
-                                    <th
-                                        key={header}
-                                        className="px-4 py-2 text-left text-xs font-medium text-gray-700 dark:text-white uppercase tracking-wider"
-                                    >
-                                        {header}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {paginated.length === 0 ? (
+        <section className="w-full min-h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 transition-colors py-3 sm:py-6 font-inter">
+            <div className="w-full min-w-0 px-2 sm:px-4 md:px-8 flex flex-col flex-1 min-w-0">
+                {/* Título padronizado igual PesquisaList */}
+                <h1 className="text-lg sm:text-xl font-semibold text-left text-blue-800 dark:text-white tracking-tight mb-4 sm:mb-6">
+                    Clientes
+                </h1>
+                {/* Barra de pesquisa alinhada ao início, largura fixa e responsiva */}
+                <div className="w-full flex items-start mb-4 pl-2 sm:pl-0">
+                    <div className="w-[300px] sm:w-1/3 self-start">
+                        <SearchBar search={search} setSearch={setSearch} />
+                    </div>
+                </div>
+                {/* Tabela responsiva padronizada igual PesquisaList */}
+                <div className="overflow-x-auto w-full">
+                    <div className="overflow-auto rounded-xl shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 min-w-full sm:min-w-[900px]">
+                        <table className="w-full table-auto text-xs sm:text-sm text-left text-gray-900 dark:text-white">
+                            <thead>
                                 <tr>
-                                    <td colSpan={9} className="px-4 py-8 text-center text-gray-500 dark:text-gray-300">
-                                        Nenhum cliente encontrado.
-                                    </td>
+                                    {[
+                                        { label: "Nome", min: "min-w-[120px]" },
+                                        { label: "Logradouro", min: "min-w-[100px]" },
+                                        { label: "Número", min: "min-w-[60px]" },
+                                        { label: "Bairro", min: "min-w-[100px]" },
+                                        { label: "Cidade", min: "min-w-[100px]" },
+                                        { label: "CPF", min: "min-w-[100px]" },
+                                        { label: "Email", min: "min-w-[120px]" },
+                                        { label: "Telefone", min: "min-w-[110px]" },
+                                        { label: "Ação", min: "min-w-[60px]" },
+                                    ].map((header) => (
+                                        <th
+                                            key={header.label}
+                                            className={`px-2 sm:px-4 py-2 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider ${header.min}`}
+                                        >
+                                            {header.label}
+                                        </th>
+                                    ))}
                                 </tr>
-                            ) : (
-                                paginated.map((cliente) => (
-                                    <tr key={cliente.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                                        <td className="px-4 py-2">
-                                            <a href={`/cliente/${cliente.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                                {cliente.NOME}
-                                            </a>
-                                        </td>
-                                        <td className="px-4 py-2 max-w-[150px] truncate">{cliente.LOGRADOURO}</td>
-                                        <td className="px-4 py-2">{cliente.NUMERO}</td>
-                                        <td className="px-4 py-2 max-w-[150px] truncate">{cliente.BAIRRO}</td>
-                                        <td className="px-4 py-2 max-w-[150px] truncate">{cliente.CIDADE}</td>
-                                        <td className="px-4 py-2">{cliente.CPF}</td>
-                                        <td className="px-4 py-2 max-w-[150px] truncate">{cliente.EMAIL}</td>
-                                        <td className="px-4 py-2 flex items-center gap-2">
-                                            {cliente.TELEFONE}
-                                            <a
-                                                href={`https://wa.me/55${cliente.TELEFONE.replace(/\D/g, "")}?text=Olá! ${cliente.NOME}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                aria-label={`Enviar mensagem para ${cliente.NOME} via WhatsApp`}
-                                            >
-                                                <img
-                                                    width="24"
-                                                    height="24"
-                                                    src="https://img.icons8.com/color/48/whatsapp--v1.png"
-                                                    alt="WhatsApp"
-                                                />
-                                            </a>
-                                        </td>
-                                        <td className="px-4 py-2">
-                                            <a href={`/cadastrar-os/${cliente.id}`} aria-label="Criar ordem de serviço">
-                                                <svg
-                                                    className="w-6 h-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M9 12h6m-3-3v6m-7 4h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                                    />
-                                                </svg>
-                                            </a>
+                            </thead>
+                            <tbody>
+                                {paginated.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={9} className="px-2 sm:px-4 py-8 text-center text-gray-500 dark:text-gray-300 text-xs sm:text-sm">
+                                            Nenhum cliente encontrado.
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ) : (
+                                    paginated.map((cliente) => (
+                                        <tr key={cliente.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                            <td className="px-2 sm:px-4 py-2 min-w-[120px]">
+                                                <a href={`/cliente/${cliente.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                                                    {cliente.NOME}
+                                                </a>
+                                            </td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[100px]">{cliente.LOGRADOURO}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[60px]">{cliente.NUMERO}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[100px]">{cliente.BAIRRO}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[100px]">{cliente.CIDADE}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[100px]">{cliente.CPF}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[120px]">{cliente.EMAIL}</td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[110px]">
+                                                {cliente.TELEFONE}
+                                                <a
+                                                    href={`https://wa.me/55${cliente.TELEFONE.replace(/\D/g, "")}?text=Olá! ${cliente.NOME}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label={`Enviar mensagem para ${cliente.NOME} via WhatsApp`}
+                                                >
+                                                    <img
+                                                        width="24"
+                                                        height="24"
+                                                        src="https://img.icons8.com/color/48/whatsapp--v1.png"
+                                                        alt="WhatsApp"
+                                                    />
+                                                </a>
+                                            </td>
+                                            <td className="px-2 sm:px-4 py-2 min-w-[60px]">
+                                                <a href={`/cadastrar-os/${cliente.id}`} aria-label="Criar ordem de serviço">
+                                                    <svg
+                                                        className="w-6 h-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M9 12h6m-3-3v6m-7 4h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                                        />
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 {/* Paginação moderna centralizada */}
                 <Paginator

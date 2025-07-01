@@ -1,5 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from '../ui/Button';
 
 // Tipos para os dados da OS
 interface Cliente {
@@ -72,37 +73,66 @@ const formaPagLabels: Record<string, string> = {
 };
 
 const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages = [] }) => {
-    return (
-        <section className="min-h-screen w-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 flex flex-col items-center py-10 px-0 overflow-x-auto">
-            <nav aria-label="breadcrumb" className="w-full px-4 md:px-8 mb-8">
-                <ol className="flex flex-wrap gap-2 text-base font-medium text-blue-700/80 dark:text-blue-200">
-                    <li>
-                        <Link to="/" className="hover:text-blue-900 dark:hover:text-white transition-colors">Página Principal</Link>
-                    </li>
-                    <li className="text-blue-300 dark:text-blue-700">/</li>
-                    <li>
-                        <Link to="/os" className="hover:text-blue-900 dark:hover:text-white transition-colors">Listar O.S</Link>
-                    </li>
-                    <li className="text-blue-300 dark:text-blue-700">/</li>
-                    <li className="text-blue-900 dark:text-white font-semibold">Visualizar O.S</li>
-                    <li className="text-blue-300 dark:text-blue-700">/</li>
-                    <li>
-                        <Link to={`/os/historico/${VISUALIZAR_OS.id}`} className="hover:text-blue-900 dark:hover:text-white transition-colors">Histórico</Link>
-                    </li>
-                </ol>
-            </nav>
+    const [editMode, setEditMode] = React.useState(false);
+    const [osData, setOsData] = React.useState({ ...VISUALIZAR_OS });
+    const [showMsg, setShowMsg] = React.useState(false);
+    const navigate = useNavigate();
 
+    React.useEffect(() => {
+        setOsData({ ...VISUALIZAR_OS });
+    }, [VISUALIZAR_OS]);
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        const { name, value } = e.target;
+        setOsData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    function handleSave() {
+        setEditMode(false);
+        setShowMsg(true);
+        setTimeout(() => setShowMsg(false), 2500);
+    }
+
+    function handleCancelEdit() {
+        setEditMode(false);
+        setOsData({ ...VISUALIZAR_OS });
+    }
+
+    // Utilitário para garantir data local no input type=date
+    function toLocalDateInputValue(dateStr: string) {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        const tzOffset = date.getTimezoneOffset() * 60000;
+        const localISO = new Date(date.getTime() - tzOffset).toISOString().slice(0, 10);
+        return localISO;
+    }
+
+    return (
+        <section className="min-h-screen w-full min-w-0 bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 flex flex-col items-center py-10 px-2 sm:px-4 md:px-8">
             <div className="w-full px-2 md:px-10">
+                {/* Botão Voltar */}
+                <div className="mb-4 flex justify-start">
+                    <Button type="button" variant="outline" className="px-4 py-2 font-semibold shadow" onClick={() => navigate(-1)}>
+                        ← Voltar
+                    </Button>
+                </div>
+
+                {/* Toast de sucesso fixo, nunca empurra o layout */}
+                {showMsg && (
+                    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 p-4 rounded-xl border bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-700 text-center font-semibold shadow-lg min-w-[220px] max-w-[90vw]">
+                        Dados salvos com sucesso!
+                    </div>
+                )}
+                {/* Mensagens do backend (mantém no fluxo, pois podem ser múltiplas e não são toast) */}
                 {messages.length > 0 && (
                     <div className="mb-6 space-y-3">
                         {messages.map((msg, i) => (
                             <div
                                 key={i}
-                                className={`p-4 rounded-xl border ${
-                                    msg.tags === "error"
-                                        ? "bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-100 dark:border-red-700"
-                                        : "bg-blue-50 text-blue-800 border-blue-100 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-700"
-                                }`}
+                                className={`p-4 rounded-xl border ${msg.tags === "error"
+                                    ? "bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-100 dark:border-red-700"
+                                    : "bg-blue-50 text-blue-800 border-blue-100 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-700"
+                                    }`}
                             >
                                 {msg.message}
                             </div>
@@ -127,7 +157,7 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
 
                 <div className="space-y-10">
                     <h1 className="text-4xl font-extrabold text-center text-blue-800 dark:text-white tracking-tight drop-shadow mb-8">
-                        {unidade}{VISUALIZAR_OS.id}
+                        {unidade}{osData.id}
                     </h1>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -158,83 +188,116 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         {/* Data Pedido */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Data Pedido</label>
-                            <div className="bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
-                                {new Date(VISUALIZAR_OS.DATA_SOLICITACAO).toLocaleDateString()}
-                            </div>
+                            {editMode ? (
+                                <input
+                                    name="DATA_SOLICITACAO"
+                                    type="date"
+                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                    value={toLocalDateInputValue(osData.DATA_SOLICITACAO)}
+                                    onChange={handleChange}
+                                />
+                            ) : (
+                                <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
+                                    {new Date(osData.DATA_SOLICITACAO).toLocaleDateString()}
+                                </div>
+                            )}
                         </div>
                         {/* Previsão Entrega */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Previsão Entrega</label>
-                            <div className="bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
-                                {new Date(VISUALIZAR_OS.PREVISAO_ENTREGA).toLocaleDateString()}
-                            </div>
+                            {editMode ? (
+                                <input
+                                    name="PREVISAO_ENTREGA"
+                                    type="date"
+                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                    value={toLocalDateInputValue(osData.PREVISAO_ENTREGA)}
+                                    onChange={handleChange}
+                                />
+                            ) : (
+                                <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
+                                    {new Date(osData.PREVISAO_ENTREGA).toLocaleDateString()}
+                                </div>
+                            )}
                         </div>
                         {/* Vendedor */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
+                            <label htmlFor="vendedor-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
                             <input
+                                id="vendedor-input"
+                                name="VENDEDOR"
                                 readOnly
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.VENDEDOR.first_name}
+                                value={osData.VENDEDOR.first_name}
                             />
                         </div>
                         {/* Cliente */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Cliente</label>
+                            <label htmlFor="cliente-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Cliente</label>
                             <Link
-                                to={`/cliente/${typeof VISUALIZAR_OS.CLIENTE === 'object' ? VISUALIZAR_OS.CLIENTE.id : ''}`}
+                                to={`/cliente/${typeof osData.CLIENTE === 'object' ? osData.CLIENTE.id : ''}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 <input
+                                    id="cliente-input"
+                                    name="CLIENTE"
                                     readOnly
                                     className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                                    value={typeof VISUALIZAR_OS.CLIENTE === 'object' ? VISUALIZAR_OS.CLIENTE.nome : VISUALIZAR_OS.CLIENTE}
+                                    value={typeof osData.CLIENTE === 'object' ? osData.CLIENTE.nome : osData.CLIENTE}
                                 />
                             </Link>
                         </div>
                         {/* Tipo de Serviço */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Tipo de Serviço</label>
+                            <label htmlFor="servico-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Tipo de Serviço</label>
                             <input
-                                readOnly
+                                id="servico-input"
+                                name="SERVICO"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.SERVICO}
+                                value={osData.SERVICO}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Laboratório */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Laboratório</label>
+                            <label htmlFor="laboratorio-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Laboratório</label>
                             <input
-                                readOnly
+                                id="laboratorio-input"
+                                name="LABORATORIO"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.LABORATORIO}
+                                value={osData.LABORATORIO}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* OD/ OE/ AD/ DNP/ P/ DPA/ DIAG/ V/ H/ ALT/ ARM */}
-                        { [
-                            { label: "OD - ESF", value: VISUALIZAR_OS.OD_ESF },
-                            { label: "OD - CIL", value: VISUALIZAR_OS.OD_CIL },
-                            { label: "OD - EIXO", value: VISUALIZAR_OS.OD_EIXO },
-                            { label: "OE - ESF", value: VISUALIZAR_OS.OE_ESF },
-                            { label: "OE - CIL", value: VISUALIZAR_OS.OE_CIL },
-                            { label: "OE - EIXO", value: VISUALIZAR_OS.OE_EIXO },
-                            { label: "AD", value: VISUALIZAR_OS.AD },
-                            { label: "DNP", value: VISUALIZAR_OS.DNP },
-                            { label: "P", value: VISUALIZAR_OS.P },
-                            { label: "DPA", value: VISUALIZAR_OS.DPA },
-                            { label: "DIAG", value: VISUALIZAR_OS.DIAG },
-                            { label: "V", value: VISUALIZAR_OS.V },
-                            { label: "H", value: VISUALIZAR_OS.H },
-                            { label: "ALT", value: VISUALIZAR_OS.ALT },
-                            { label: "ARM", value: VISUALIZAR_OS.ARM }
-                        ].map(({ label, value }) => (
+                        {[
+                            { label: "OD - ESF", name: "OD_ESF", value: osData.OD_ESF },
+                            { label: "OD - CIL", name: "OD_CIL", value: osData.OD_CIL },
+                            { label: "OD - EIXO", name: "OD_EIXO", value: osData.OD_EIXO },
+                            { label: "OE - ESF", name: "OE_ESF", value: osData.OE_ESF },
+                            { label: "OE - CIL", name: "OE_CIL", value: osData.OE_CIL },
+                            { label: "OE - EIXO", name: "OE_EIXO", value: osData.OE_EIXO },
+                            { label: "AD", name: "AD", value: osData.AD },
+                            { label: "DNP", name: "DNP", value: osData.DNP },
+                            { label: "P", name: "P", value: osData.P },
+                            { label: "DPA", name: "DPA", value: osData.DPA },
+                            { label: "DIAG", name: "DIAG", value: osData.DIAG },
+                            { label: "V", name: "V", value: osData.V },
+                            { label: "H", name: "H", value: osData.H },
+                            { label: "ALT", name: "ALT", value: osData.ALT },
+                            { label: "ARM", name: "ARM", value: osData.ARM }
+                        ].map(({ label, name, value }) => (
                             <div key={label}>
-                                <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">{label}</label>
+                                <label htmlFor={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`} className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">{label}</label>
                                 <input
-                                    readOnly
+                                    id={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`}
+                                    name={name}
+                                    readOnly={!editMode}
                                     className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
                                     value={value}
+                                    onChange={handleChange}
                                 />
                             </div>
                         ))}
@@ -242,88 +305,109 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Montagem</label>
                             <input
-                                readOnly
+                                name="MONTAGEM"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.MONTAGEM}
+                                value={osData.MONTAGEM}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Lentes */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Lentes</label>
                             <input
-                                readOnly
+                                name="LENTES"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.LENTES}
+                                value={osData.LENTES}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Armação */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Armação</label>
                             <input
-                                readOnly
+                                name="ARMACAO"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.ARMACAO}
+                                value={osData.ARMACAO}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Observação */}
                         <div className="sm:col-span-2 md:col-span-4">
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Observação</label>
                             <textarea
-                                readOnly
+                                name="OBSERVACAO"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none resize-none"
                                 rows={3}
-                                value={VISUALIZAR_OS.OBSERVACAO}
+                                value={osData.OBSERVACAO}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Pagamento */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Pagamento</label>
                             <input
-                                readOnly
+                                name="FORMA_PAG"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={formaPagLabels[VISUALIZAR_OS.FORMA_PAG] || "-"}
+                                value={editMode ? osData.FORMA_PAG : (formaPagLabels[osData.FORMA_PAG] || "-")}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Valor */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor</label>
                             <input
-                                readOnly
+                                name="VALOR"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.VALOR}
+                                value={osData.VALOR}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Parcelas */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Parcelas</label>
                             <input
-                                readOnly
+                                name="QUANTIDADE_PARCELA"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.QUANTIDADE_PARCELA + "x"}
+                                value={osData.QUANTIDADE_PARCELA + "x"}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Valor Pago */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor Pago</label>
                             <input
-                                readOnly
+                                name="ENTRADA"
+                                readOnly={!editMode}
                                 className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={VISUALIZAR_OS.ENTRADA}
+                                value={osData.ENTRADA}
+                                onChange={handleChange}
                             />
                         </div>
                         {/* Status */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Status</label>
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow ${statusLabels[VISUALIZAR_OS.STATUS]?.className || "bg-gray-300 text-gray-800"}`}>
-                                {statusLabels[VISUALIZAR_OS.STATUS]?.label || "-"}
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow ${statusLabels[osData.STATUS]?.className || "bg-gray-300 text-gray-800"}`}>
+                                {statusLabels[osData.STATUS]?.label || "-"}
                             </span>
                         </div>
                     </div>
-
                     <div className="flex flex-wrap justify-center gap-4 mt-10">
-                        <button type="button" className="px-5 py-2 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 rounded-lg opacity-60 cursor-not-allowed font-semibold shadow" disabled>Editar</button>
-                        <button type="button" className="px-5 py-2 bg-yellow-400 dark:bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 dark:hover:bg-yellow-700 transition-colors font-semibold shadow">Imprimir</button>
-                        <button type="button" className="px-5 py-2 bg-blue-700 dark:bg-blue-900 text-white rounded-lg hover:bg-blue-800 dark:hover:bg-blue-950 transition-colors font-semibold shadow">Finalizar</button>
+                        {!editMode ? (
+                            <Button type="button" variant="outline" className="px-5 py-2 font-semibold shadow" onClick={() => setEditMode(true)}>Editar</Button>
+                        ) : (
+                            <>
+                                <Button type="button" variant="primary" className="px-5 py-2 font-semibold shadow" onClick={handleSave}>Salvar</Button>
+                                <Button type="button" variant="outline" className="px-5 py-2 font-semibold shadow" onClick={handleCancelEdit}>Cancelar</Button>
+                            </>
+                        )}
+                        <Button type="button" variant="danger" className="px-5 py-2 bg-yellow-400 dark:bg-yellow-600 text-white rounded-lg hover:bg-yellow-500 dark:hover:bg-yellow-700 transition-colors font-semibold shadow">Imprimir</Button>
                     </div>
                 </div>
             </div>

@@ -204,7 +204,7 @@ const Kanban: React.FC = () => {
 
     return (
         <section className="w-full min-h-[94vh] py-6 bg-white dark:bg-gray-900 transition-colors duration-300">
-            <div className="container mx-auto px-4">
+            <div className="w-full min-w-0 px-4">
                 <div className="sticky top-20 left-0 w-full z-10 bg-white dark:bg-gray-900">
                     <h3 className="text-center text-lg md:text-2xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-gray-100">Kanban - Últimos 10 Dias</h3>
                 </div>

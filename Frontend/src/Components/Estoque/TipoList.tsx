@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { Button } from '../ui/Button';
 
 interface Tipo {
     id: number;
@@ -72,8 +73,8 @@ const TipoList: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto py-4 px-4 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
-            <div className="max-w-2xl mx-auto">
+        <div className="w-full min-w-0 py-4 px-2 sm:px-4 md:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
+            <div className="max-w-2xl mx-auto min-w-0">
                 {/* Toast de mensagem temporária */}
                 {/* Toast de mensagem fixa alinhada com a barra de pesquisa, levemente para a direita */}
                 <div className="fixed z-50" style={{ top: 'calc(80px + 1.5rem)', left: 'calc(36% - 53px)', transform: 'translateX(0)' }}>
@@ -106,12 +107,24 @@ const TipoList: React.FC = () => {
                     >
                         Novo Tipo
                     </button>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Voltar
-                    </button>
+                    {/* Botão Voltar responsivo */}
+                    <div className="flex items-center">
+                        <button
+                            className="block sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150 bg-gray-500 text-white hover:bg-gray-700 focus:bg-gray-700"
+                            onClick={() => navigate(-1)}
+                            aria-label="Voltar"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="hidden sm:block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2"
+                        >
+                            Voltar
+                        </button>
+                    </div>
                 </div>
                 {/* Formulário novo tipo */}
                 {showNovo && (
@@ -123,13 +136,13 @@ const TipoList: React.FC = () => {
                             onChange={(e) => setNovoNome(e.target.value)}
                             autoFocus
                         />
-                        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded" onClick={handleNovo}>Salvar</button>
-                        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 rounded" onClick={() => setShowNovo(false)}>Cancelar</button>
+                        <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded" onClick={handleNovo}>Salvar</Button>
+                        <Button variant="outline" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 rounded" onClick={() => setShowNovo(false)}>Cancelar</Button>
                     </div>
                 )}
                 {/* Tabela de tipos */}
                 <div className="overflow-x-auto w-full">
-                    <table className="min-w-[640px] table-auto w-full bg-white dark:bg-gray-800 rounded shadow">
+                    <table className="min-w-full sm:min-w-[640px] table-auto w-full bg-white dark:bg-gray-800 rounded shadow">
                         <thead>
                             <tr>
                                 <th className="px-4 py-2 border-b text-left">N°</th>
@@ -159,13 +172,13 @@ const TipoList: React.FC = () => {
                                     <td className="px-4 py-2 border-b text-center">
                                         {editId === tipo.id ? (
                                             <>
-                                                <button className="text-green-600 hover:text-green-800 mr-2" onClick={() => handleEditSave(tipo.id)} title="Salvar"><FaCheck /></button>
-                                                <button className="text-red-600 hover:text-red-800" onClick={handleEditCancel} title="Cancelar"><FaTimes /></button>
+                                                <Button variant="primary" className="text-green-600 hover:text-green-800 mr-2" onClick={() => handleEditSave(tipo.id)} title="Salvar"><FaCheck /></Button>
+                                                <Button variant="danger" className="text-red-600 hover:text-red-800" onClick={handleEditCancel} title="Cancelar"><FaTimes /></Button>
                                             </>
                                         ) : (
                                             <>
-                                                <button className="text-blue-600 hover:text-blue-800 mr-2" onClick={() => handleEdit(tipo)} title="Editar"><FaEdit /></button>
-                                                <button className="text-red-600 hover:text-red-800" onClick={() => setDeleteId(tipo.id)} title="Excluir"><FaTrash /></button>
+                                                <Button variant="primary" className="text-blue-600 hover:text-blue-800 mr-2" onClick={() => handleEdit(tipo)} title="Editar"><FaEdit /></Button>
+                                                <Button variant="danger" className="text-red-600 hover:text-red-800" onClick={() => setDeleteId(tipo.id)} title="Excluir"><FaTrash /></Button>
                                             </>
                                         )}
                                     </td>
@@ -178,9 +191,9 @@ const TipoList: React.FC = () => {
                 <div className="flex justify-between items-center gap-2 mt-4">
                     <a href="/estoque" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Voltar</a>
                     <div className="flex justify-center items-center gap-2 flex-1">
-                        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === 1} onClick={() => setPaginaAtual(paginaAtual - 1)}>{'<'}</button>
+                        <Button variant="outline" className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === 1} onClick={() => setPaginaAtual(paginaAtual - 1)}>{'<'}</Button>
                         <span className="text-gray-700 dark:text-gray-300">{paginaAtual} de {totalPaginas}</span>
-                        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === totalPaginas || totalPaginas === 0} onClick={() => setPaginaAtual(paginaAtual + 1)}>{'>'}</button>
+                        <Button variant="outline" className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === totalPaginas || totalPaginas === 0} onClick={() => setPaginaAtual(paginaAtual + 1)}>{'>'}</Button>
                         {/* Select de quantidade por página ao lado direito do paginator */}
                         <div className="flex items-center gap-2 ml-4">
                             <label className="text-gray-700 dark:text-gray-300">Exibir</label>
@@ -202,8 +215,8 @@ const TipoList: React.FC = () => {
                             <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-100">Confirmar exclusão</h3>
                             <p className="mb-4 text-gray-700 dark:text-gray-300">Deseja realmente excluir este tipo?</p>
                             <div className="flex justify-end gap-2">
-                                <button className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded" onClick={() => handleDelete(deleteId)}>Excluir</button>
-                                <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" onClick={() => setDeleteId(null)}>Cancelar</button>
+                                <Button variant="danger" className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded" onClick={() => handleDelete(deleteId)}>Excluir</Button>
+                                <Button variant="outline" className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" onClick={() => setDeleteId(null)}>Cancelar</Button>
                             </div>
                         </div>
                     </div>

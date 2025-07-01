@@ -7,130 +7,100 @@
 // - Busca por texto e filtro por data.
 // - Tabela de vendas com paginação (se necessário).
 
-import React, { useEffect, useState } from "react";
-
-const vendasMock = [
-    {
-        data: "2025-06-01",
-        descricao: "Venda balcão #1",
-        os: "1234",
-        tipo: "Entrada",
-        valor: "R$: 500,00",
-        forma: "PIX"
-    },
-    {
-        data: "2025-06-05",
-        descricao: "Venda balcão #2",
-        os: "1235",
-        tipo: "Entrada",
-        valor: "R$: 800,00",
-        forma: "DINHEIRO"
-    },
-    {
-        data: "2025-06-10",
-        descricao: "Recebimento OS #3",
-        os: "1236",
-        tipo: "Entrada",
-        valor: "R$: 1200,00",
-        forma: "CREDITO"
-    },
-    // ...adicione mais mocks se quiser
-];
+import React, { useEffect } from "react";
+import { useMinhasVendas } from "./hooks/useMinhasVendas";
+import MinhasVendasFilters from "./MinhasVendasFilters";
+import MinhasVendasTable from "./MinhasVendasTable";
+import MinhasVendasCardList from "./MinhasVendasCardList";
 
 const MinhasVendas: React.FC = () => {
-    const [search, setSearch] = useState("");
-    const [dataInicio, setDataInicio] = useState("");
-    const [dataFim, setDataFim] = useState("");
+    const {
+        search, setSearch,
+        dataInicio, setDataInicio,
+        dataFim, setDataFim,
+        currentPage, setCurrentPage,
+        pageSize, setPageSize,
+        PAGE_SIZE_OPTIONS,
+        totalPages,
+        paginated
+    } = useMinhasVendas();
 
     useEffect(() => {
         document.documentElement.classList.add('dark');
-        // Simulação de dados e renderização (substitua por chamada real se necessário)
         document.getElementById('eu')!.textContent = 'R$ 5.000,00';
         document.getElementById('eu_qtd')!.textContent = '20 vendas';
         document.getElementById('pm')!.textContent = 'Meta: R$ 7.000,00';
     }, []);
 
-    // Filtro de pesquisa e data
-    const vendasFiltradas = vendasMock.filter(v => {
-        const matchSearch =
-            v.descricao.toLowerCase().includes(search.toLowerCase()) ||
-            v.os.toLowerCase().includes(search.toLowerCase()) ||
-            v.forma.toLowerCase().includes(search.toLowerCase());
-        const matchDataInicio = dataInicio ? v.data >= dataInicio : true;
-        const matchDataFim = dataFim ? v.data <= dataFim : true;
-        return matchSearch && matchDataInicio && matchDataFim;
-    });
-
     return (
-        <div className=" bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-200 flex flex-col p-4">
-            <div className="w-full max-w-2xl mx-auto">
-                {/* Mensagens de alerta (simulado) */}
-                <div className="text-center mb-4">
-                    {/* Exemplo de mensagem: <div className="alert alert-success">Sucesso!</div> */}
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-4">
-                    <h5 className="text-xl font-bold mb-2 text-center">Minhas Vendas no mês</h5>
-                    <p className="text-lg text-center mb-2">
-                        <span className="ml-4" id="eu"></span>
-                        <span className="ml-4" id="eu_qtd"></span>
-                    </p>
-                    <span className="block text-center text-sm text-gray-600 dark:text-gray-300" id="pm"></span>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                    <h5 className="text-xl font-bold mb-4 text-center">Extrato de Vendas Registradas</h5>
-                    {/* Barra de pesquisa e filtro de data logo abaixo do título */}
-                    <div className="flex flex-col md:flex-row gap-2 mb-4 items-center justify-between">
-                        <input
-                            type="text"
-                            className="p-2 rounded border dark:bg-gray-800 dark:text-white w-full md:w-1/2"
-                            placeholder="Pesquisar por descrição, OS ou forma..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <input
-                                type="date"
-                                className="p-2 rounded border dark:bg-gray-800 dark:text-white"
-                                value={dataInicio}
-                                onChange={e => setDataInicio(e.target.value)}
-                            />
-                            <span className="self-center">até</span>
-                            <input
-                                type="date"
-                                className="p-2 rounded border dark:bg-gray-800 dark:text-white"
-                                value={dataFim}
-                                onChange={e => setDataFim(e.target.value)}
-                            />
+        <div className="font-sans bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="w-full min-w-0 px-2 sm:px-4 md:px-8 py-3 sm:py-6">
+                {/* Título centralizado no topo */}
+                <h5 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Extrato de Vendas Registradas</h5>
+                <div className="w-full flex flex-col flex-1 min-w-0">
+                    {/* Mensagens de alerta (simulado) */}
+                    <div className="text-center mb-4">
+                        {/* Exemplo de mensagem: <div className="alert alert-success">Sucesso!</div> */}
+                    </div>
+                    {/* Card do título discreto, alinhado à esquerda, agora com informações de venda dentro */}
+                    <div className="bg-white dark:bg-gray-800 rounded shadow p-2 mb-3 w-full max-w-xs text-left flex flex-col gap-1">
+                        <h5 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">Minhas vendas - Período</h5>
+                        <div className="flex flex-col gap-0.5">
+                            <span id="eu" className="text-base text-gray-700 dark:text-gray-200"></span>
+                            <span id="eu_qtd" className="text-base text-gray-700 dark:text-gray-200"></span>
+                            <span id="pm" className="text-sm text-gray-500 dark:text-gray-400"></span>
                         </div>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm md:text-base bg-white dark:bg-gray-800 rounded shadow">
-                            <thead>
-                                <tr>
-                                    <th className="px-2 py-2 border-b text-left">Data</th>
-                                    <th className="px-2 py-2 border-b text-left">Descrição</th>
-                                    <th className="px-2 py-2 border-b text-left">OS</th>
-                                    <th className="px-2 py-2 border-b text-left">Valor</th>
-                                    <th className="px-2 py-2 border-b text-left">Forma</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {vendasFiltradas.map((v, idx) => (
-                                    <tr key={idx} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                        <td className="px-2 py-2 border-b">{v.data}</td>
-                                        <td className="px-2 py-2 border-b">{v.descricao}</td>
-                                        <td className="px-2 py-2 border-b">{v.os}</td>
-                                        <td className="px-2 py-2 border-b">{v.valor}</td>
-                                        <td className="px-2 py-2 border-b">{v.forma}</td>
-                                    </tr>
-                                ))}
-                                {vendasFiltradas.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="text-center py-4 text-gray-500 dark:text-gray-400">Nenhuma venda encontrada.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                    {/* Filtros e busca em linha, compactos e responsivos */}
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+                        <MinhasVendasFilters
+                            search={search} setSearch={setSearch}
+                            dataInicio={dataInicio} setDataInicio={setDataInicio}
+                            dataFim={dataFim} setDataFim={setDataFim}
+                        />
+                        {/* Tabela e cards */}
+                        <div className="overflow-x-auto">
+                            {/* Cards para mobile */}
+                            <MinhasVendasCardList paginated={paginated} />
+                            {/* Tabela tradicional para desktop */}
+                            <MinhasVendasTable paginated={paginated} />
+                        </div>
+                        {/* Paginação e quantidade */}
+                        <div className="flex flex-col md:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 sm:mt-6 px-1 sm:px-2 w-full">
+                            <div className="flex items-center gap-1 sm:gap-2">
+                                <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 font-medium">Itens por página:</span>
+                                <select
+                                    value={pageSize}
+                                    onChange={e => setPageSize(Number(e.target.value))}
+                                    className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-2 sm:px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-xs sm:text-sm"
+                                >
+                                    {PAGE_SIZE_OPTIONS.map(opt => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex items-center gap-1 sm:gap-2">
+                                <button
+                                    className="px-2 sm:px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 shadow-sm transition text-xs sm:text-sm"
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    aria-label="Página anterior"
+                                >
+                                    &lt;
+                                </button>
+                                <span className="px-2 sm:px-3 py-1 text-gray-700 dark:text-gray-200 font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm text-xs sm:text-sm">
+                                    Página {currentPage} de {totalPages}
+                                </span>
+                                <button
+                                    className="px-2 sm:px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 shadow-sm transition text-xs sm:text-sm"
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    aria-label="Próxima página"
+                                >
+                                    &gt;
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

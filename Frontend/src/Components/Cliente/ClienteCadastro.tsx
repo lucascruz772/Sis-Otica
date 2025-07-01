@@ -165,17 +165,18 @@ const ClienteCadastro: React.FC = () => {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row justify-start gap-3 sm:gap-4 mt-4 sm:mt-6">
+                {/* Botões responsivos: largura total no mobile, inline no desktop */}
+                <div className="flex flex-col sm:flex-row justify-start gap-3 sm:gap-4 mt-4 sm:mt-6 w-full">
                     <button
                         type="submit"
-                        className="px-4 sm:px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition w-full sm:w-auto"
+                        className="px-4 sm:px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition w-full sm:w-auto min-w-[120px]"
                     >
                         Salvar
                     </button>
                     <button
                         type="button"
                         onClick={() => navigate("/clientes")}
-                        className="px-4 sm:px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full sm:w-auto"
+                        className="px-4 sm:px-6 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition w-full sm:w-auto min-w-[120px]"
                     >
                         Cancelar
                     </button>

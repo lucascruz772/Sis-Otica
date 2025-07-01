@@ -22,7 +22,13 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, ful
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     // Detecta se está em mobile (até sm)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     // Detecta se a sidebar está oculta (minimized e fullWidth true)
     const sidebarOculta = isMobile && minimized && fullWidth;
 
@@ -53,17 +59,35 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, ful
             }
         >
             <div className={sidebarOculta || isMobile ? "w-full h-full flex items-center justify-between px-3" : "h-full flex items-center justify-between px-8"}>
-                {/* Botão de minimizar só aparece em md+ */}
+                {/* Botão de menu lateral: visível só em mobile (até md) */}
                 <button
                     onClick={onMinimizeSidebar}
-                    className="hidden md:inline-flex text-gray-900 dark:text-white bg-transparent border-0 cursor-pointer text-xl md:text-2xl mr-2 md:mr-4"
-                    aria-label="Minimizar menu"
+                    className="inline-flex md:hidden text-gray-900 dark:text-white bg-transparent border-0 cursor-pointer text-xl mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label={minimized ? "Expandir menu" : "Minimizar menu"}
+                    tabIndex={0}
                 >
                     <FaBars className="text-gray-900 dark:text-white" />
                 </button>
+                {/* Botão desktop (opcional): pode ser removido se não quiser minimizar no desktop */}
+                {/* <button
+                    onClick={onMinimizeSidebar}
+                    className="hidden md:inline-flex text-gray-900 dark:text-white bg-transparent border-0 cursor-pointer text-xl md:text-2xl mr-2 md:mr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label={minimized ? "Expandir menu" : "Minimizar menu"}
+                    tabIndex={0}
+                >
+                    <FaBars className="text-gray-900 dark:text-white" />
+                </button> */}
                 <div className={isMobile ? "font-bold text-base text-gray-900 dark:text-white" : "font-bold text-xl text-gray-900 dark:text-white"}>
                     Sis-Ótica
                 </div>
+                {/* Link para a UI Demo (apenas para dev, pode remover em produção) */}
+                <a
+                    href="/ui-demo"
+                    className="ml-4 px-3 py-1.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-xs font-semibold hover:bg-blue-200 dark:hover:bg-blue-800 transition hidden md:inline-block"
+                    title="Demonstração de UI"
+                >
+                    UI Demo
+                </a>
                 <div style={{ position: "relative" }}>
                     <button
                         onClick={() => setDropdownOpen((open) => !open)}
