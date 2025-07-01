@@ -26,7 +26,6 @@ import ComissaoForm from "./Components/RealizarPagamento/ComissaoForm";
 import ComissaoDetail from "./Components/RealizarPagamento/ComissaoDetail";
 import ComissaoDelete from "./Components/RealizarPagamento/ComissaoDelete";
 import { ToastProvider } from "./Components/ui/ToastContext";
-import UIDemo from "./Components/ui/UIDemo";
 
 const App: React.FC = () => {
   const [sidebarMinimized, setSidebarMinimized] = useState(false); // desktop
@@ -121,7 +120,6 @@ const App: React.FC = () => {
               <Route path="/comissao/nova" element={<ComissaoForm />} />
               <Route path="/comissao/:id" element={<ComissaoDetail />} />
               <Route path="/comissao/:id/delete" element={<ComissaoDelete />} />
-              <Route path="/ui-demo" element={<UIDemo />} />
             </Routes>
           </main>
         </div>
