@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import BotoesGerenciarOs from "./BotoesGerenciarOs";
 import { FaArrowLeft } from "react-icons/fa";
+import { useAuth } from "../../hooks/useAuth";
+import { clientesMock } from "./clientesMock";
 
 interface ClienteCadastroOsProps {
     clienteId?: number;
@@ -14,6 +16,7 @@ interface NovaOS {
     DATA_SOLICITACAO: string;
     PREVISAO_ENTREGA: string;
     VENDEDOR: string;
+    OTICA: string;
     CLIENTE: string;
     SERVICO: string;
     LABORATORIO: string;
@@ -46,6 +49,7 @@ const initialState: NovaOS = {
     DATA_SOLICITACAO: "",
     PREVISAO_ENTREGA: "",
     VENDEDOR: "",
+    OTICA: "",
     CLIENTE: "",
     SERVICO: "",
     LABORATORIO: "",
@@ -74,23 +78,24 @@ const initialState: NovaOS = {
     ENTRADA: "",
 };
 
-// Função para máscara de dinheiro
-function formatMoney(value: string) {
-    const onlyDigits = value.replace(/\D/g, "");
-    const number = Number(onlyDigits) / 100;
-    return number.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
 const ClienteCadastroOs: React.FC<ClienteCadastroOsProps> = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { usuario } = useAuth();
     const params = new URLSearchParams(location.search);
     const clienteId = props.clienteId || params.get("clienteId") || "";
-    const clienteNome = props.clienteNome || "";
+    // Busca o nome do cliente pelo ID, se não vier por props
+    let clienteNome = props.clienteNome || "";
+    if (!clienteNome && clienteId) {
+        const clienteObj = clientesMock.find(c => String(c.id) === String(clienteId));
+        clienteNome = clienteObj ? clienteObj.nome : String(clienteId);
+    }
 
     const [form, setForm] = useState<NovaOS>({
         ...initialState,
-        CLIENTE: clienteId ? String(clienteId) : "",
+        CLIENTE: clienteNome,
+        VENDEDOR: usuario?.nome || "",
+        OTICA: usuario?.otica || "",
     });
     const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
     const [feedbackType, setFeedbackType] = useState<'success' | 'error' | null>(null);
@@ -110,12 +115,7 @@ const ClienteCadastroOs: React.FC<ClienteCadastroOsProps> = (props) => {
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
         const { name, value } = e.target;
-        // Máscara de dinheiro para os campos VALOR e ENTRADA
-        if (name === "VALOR" || name === "ENTRADA") {
-            setForm((prev) => ({ ...prev, [name]: formatMoney(value) }));
-        } else {
-            setForm((prev) => ({ ...prev, [name]: value }));
-        }
+        setForm((prev) => ({ ...prev, [name]: value }));
     }
 
     async function handleSubmit(e: React.FormEvent) {
@@ -177,15 +177,21 @@ const ClienteCadastroOs: React.FC<ClienteCadastroOsProps> = (props) => {
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Previsão Entrega</label>
                             <input name="PREVISAO_ENTREGA" type="date" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={form.PREVISAO_ENTREGA} onChange={handleChange} required />
                         </div>
-                        {/* Vendedor */}
-                        <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
-                            <input name="VENDEDOR" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={form.VENDEDOR} onChange={handleChange} required />
+                        {/* Vendedor e Ótica na mesma linha */}
+                        <div className="col-span-1 md:col-span-2 flex gap-4">
+                            <div className="flex-1">
+                                <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
+                                <input name="VENDEDOR" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={form.VENDEDOR} readOnly />
+                            </div>
+                            <div className="flex-1">
+                                <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Ótica</label>
+                                <input name="OTICA" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={form.OTICA} readOnly />
+                            </div>
                         </div>
                         {/* Cliente */}
                         <div>
                             <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Cliente</label>
-                            <input name="CLIENTE" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={clienteNome || form.CLIENTE} readOnly={!!clienteId} onChange={handleChange} required />
+                            <input name="CLIENTE" className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none" value={clienteNome} readOnly required />
                         </div>
                     </div>
                     {/* Título Serviço */}

@@ -33,6 +33,11 @@ import { mockOS } from "./Components/Pesquisa/mockOS"
 import { mockCaixa } from "./Components/Caixa/mockCaixa";
 import ServicosCadastro from "./Components/Cliente/ServicosCadastro";
 import LaboratorioCadastro from "./Components/Cliente/LaboratorioCadastro";
+import PerfilEditar from "./Components/Perfil/PerfilEditar";
+
+import Cadastro from "./Components/Cadastro/Cadastro";
+import OticasForm from "./Components/Cadastro/OticasForm";
+import FuncionarioForm from "./Components/Funcionario/FuncionarioForm";
 
 const App: React.FC = () => {
   const [sidebarMinimized, setSidebarMinimized] = useState(false); // desktop
@@ -123,6 +128,11 @@ const App: React.FC = () => {
               <Route path="/relatorio_mes_anterior" element={<VendedoresMesAnterior />} />
               <Route path="/servicos-cadastro" element={<ServicosCadastro />} />
               <Route path="/laboratorio-cadastro" element={<LaboratorioCadastro />} />
+              <Route path="/perfil/editar" element={<PerfilEditar />} />
+              <Route path="/editar-perfil" element={<PerfilEditar />} />
+              <Route path="/cadastro" element={<Cadastro />} />
+              <Route path="/oticas/novo" element={<OticasForm />} />
+              <Route path="/funcionarios/novo" element={<FuncionarioForm />} />
             </Routes>
           </main>
         </div>

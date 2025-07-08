@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaHome, FaUsers, FaSearch, FaTasks, FaChartBar, FaBoxes, FaCashRegister, FaShoppingCart, FaMoneyCheckAlt, FaSignOutAlt, FaChevronLeft } from "react-icons/fa";
-import logo from "./LOGO-NOVA-PRETA .jpg";
+import logoPadrao from "./LOGO-NOVA-PRETA .jpg";
 import { ThemeContext } from '../../ThemeContext/themecontext';
+import { useAuth } from '../../hooks/useAuth';
+import { useOticaLogo } from '../../hooks/useOticaLogo';
 
 // Adiciona novas props para mobile
 interface SidebarProps {
@@ -14,6 +16,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban = false, onItemClick, showCloseButton, onClose }) => {
+    const { isGerente } = useAuth();
+    const { logo } = useOticaLogo();
     if (minimized && hideWhenMinimizedOnKanban) return null;
     return (
         <>
@@ -39,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban 
             >
                 <div className="p-2 sm:p-4 md:p-6 border-b dark:border-gray-700 flex flex-col items-center bg-gray-50 dark:bg-gray-900">
                     <img
-                        src={logo}
+                        src={logo || logoPadrao}
                         alt="logo"
                         className={`object-contain transition-all duration-300 h-10 sm:h-12 md:h-28`}
                     />
@@ -59,6 +63,13 @@ const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban 
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
                     <SidebarItem minimized={minimized} to="/caixa" icon={<FaCashRegister />} label="Caixa" onClick={onItemClick} />
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
+                    {/* Item Cadastro: visível só para gerente */}
+                    {isGerente && (
+                        <>
+                            <SidebarItem minimized={minimized} to="/cadastro" icon={<FaUsers />} label="Cadastro" onClick={onItemClick} />
+                            <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
+                        </>
+                    )}
                     <SidebarItem minimized={minimized} to="/minhas-vendas" icon={<FaShoppingCart />} label="Minhas Vendas" onClick={onItemClick} />
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
                     <SidebarItem minimized={minimized} to="/folha-pagamento" icon={<FaMoneyCheckAlt />} label="Folha de Pagamento" onClick={onItemClick} />
