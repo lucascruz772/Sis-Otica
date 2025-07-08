@@ -76,9 +76,6 @@ const Caixa: React.FC<CaixaProps> = (
     // Estado para edição
     const [editIdx, setEditIdx] = useState<number | null>(null);
     const [editData, setEditData] = useState<Lancamento | null>(null);
-    // Paginação
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [itensPorPagina, setItensPorPagina] = useState(10);
     // Filtros
     const [busca, setBusca] = useState("");
     const [filtroDataIni, setFiltroDataIni] = useState("");
@@ -120,8 +117,9 @@ const Caixa: React.FC<CaixaProps> = (
     }
 
     const lancamentosFiltrados = filtrarLancamentos();
-    const totalPaginas = Math.ceil(lancamentosFiltrados.length / itensPorPagina);
-    const lancamentosPagina = lancamentosFiltrados.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
+    // Scroll infinito: exibe todos os lançamentos filtrados
+    // const totalPaginas = Math.ceil(lancamentosFiltrados.length / itensPorPagina);
+    // const lancamentosPagina = lancamentosFiltrados.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
 
     // Cálculo dos totais
     const totalEntradas = lancamentosFiltrados.filter(l => l.tipo === "Entrada").reduce((acc, l) => acc + Number(l.valor.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.')), 0);
@@ -149,12 +147,12 @@ const Caixa: React.FC<CaixaProps> = (
     // Função para iniciar edição
     function handleEdit(idx: number) {
         setEditIdx(idx);
-        setEditData({ ...lancamentosPagina[idx] });
+        setEditData({ ...lancamentos[idx] });
     }
     // Função para salvar edição
     function handleSave(idx: number) {
         if (editData) {
-            const globalIdx = (paginaAtual - 1) * itensPorPagina + idx;
+            const globalIdx = idx;
             setLancamentos(prev => {
                 const novo = prev.map((l, i) => i === globalIdx ? editData : l);
                 localStorage.setItem("caixa_lancamentos", JSON.stringify(novo));
@@ -173,7 +171,7 @@ const Caixa: React.FC<CaixaProps> = (
     // Função para excluir
     function handleDelete(idx: number) {
         if (window.confirm('Deseja realmente excluir este lançamento?')) {
-            const globalIdx = (paginaAtual - 1) * itensPorPagina + idx;
+            const globalIdx = idx;
             setLancamentos(prev => {
                 const novo = prev.filter((_, i) => i !== globalIdx);
                 localStorage.setItem("caixa_lancamentos", JSON.stringify(novo));
@@ -185,6 +183,12 @@ const Caixa: React.FC<CaixaProps> = (
 
     return (
         <div className="relative bg-white dark:bg-gray-900 py-8 px-4 flex flex-col items-center transition-colors duration-300">
+            {/* Mensagem de feedback fixa logo abaixo da navbar */}
+            {successMsg && (
+                <div className="fixed left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-lg z-50" style={{ top: 88 }}>
+                    {successMsg}
+                </div>
+            )}
             {/* Linha de topo com botões compactos e espaçados */}
             <div className="w-full flex mb-4 gap-2 justify-between flex-wrap items-center">
                 <button
@@ -193,11 +197,6 @@ const Caixa: React.FC<CaixaProps> = (
                 >
                     Meses anteriores
                 </button>
-                {successMsg && (
-                    <span className="ml-2 text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded px-3 py-1 text-xs font-semibold shadow transition-all duration-300">
-                        {successMsg}
-                    </span>
-                )}
             </div>
 
             {/* Filtros e busca */}
@@ -255,9 +254,15 @@ const Caixa: React.FC<CaixaProps> = (
             </div>
 
             {/* Tabela de lançamentos estilizada padrão PesquisaView/ClienteList */}
-            <div className={`w-full flex-1 xl:pr-[340px]${itensPorPagina > 10 ? ' overflow-x-auto' : ''} overflow-x-auto`}> {/* pr-[340px] só em xl+ */}
-                {/* Container com overflow-x-auto garante rolagem horizontal em telas pequenas */}
-                <table className="w-full table-auto min-w-[700px] sm:min-w-[900px] text-xs sm:text-sm text-left text-gray-900 dark:text-white">
+            <div
+                id="caixa-scroll"
+                className="w-full max-w-5xl ml-0 mr-auto overflow-x-auto overflow-y-auto max-h-[70vh] min-h-[300px] custom-scrollbar-hide rounded-xl shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+            >
+                <style>{`
+                    #caixa-scroll::-webkit-scrollbar { display: none !important; }
+                    #caixa-scroll { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+                `}</style>
+                <table className="min-w-full w-full text-xs sm:text-sm text-left text-gray-900 dark:text-white">
                     <thead>
                         <tr className="bg-blue-50 dark:bg-gray-900">
                             <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-bold text-gray-700 dark:text-white uppercase tracking-wider border-b border-gray-200 dark:border-gray-700 min-w-[80px]">DATA</th>
@@ -270,14 +275,14 @@ const Caixa: React.FC<CaixaProps> = (
                         </tr>
                     </thead>
                     <tbody>
-                        {lancamentosPagina.length === 0 && (
+                        {lancamentosFiltrados.length === 0 && (
                             <tr>
                                 <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-b-xl">
                                     Nenhum lançamento cadastrado.
                                 </td>
                             </tr>
                         )}
-                        {lancamentosPagina.map((l, idx) => (
+                        {lancamentosFiltrados.map((l, idx) => (
                             <tr key={idx} className={`transition ${idx % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-blue-50 dark:bg-gray-900'} hover:bg-blue-100 dark:hover:bg-gray-700`}>
                                 {editIdx === idx ? (
                                     <>
@@ -336,40 +341,6 @@ const Caixa: React.FC<CaixaProps> = (
                         ))}
                     </tbody>
                 </table>
-            </div>
-            {/* Paginação moderna centralizada */}
-            <div className="flex flex-col md:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 sm:mt-6 px-1 sm:px-2 w-full">
-                <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 font-medium">Itens por página:</span>
-                    <select
-                        value={itensPorPagina}
-                        onChange={e => { setItensPorPagina(Number(e.target.value)); setPaginaAtual(1); }}
-                        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-2 sm:px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition text-xs sm:text-sm"
-                    >
-                        {[5, 10, 20, 50].map(q => <option key={q} value={q}>{q}</option>)}
-                    </select>
-                </div>
-                <div className="flex items-center gap-1 sm:gap-2">
-                    <button
-                        className="px-2 sm:px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 shadow-sm transition text-xs sm:text-sm"
-                        onClick={() => setPaginaAtual(paginaAtual - 1)}
-                        disabled={paginaAtual === 1}
-                        aria-label="Página anterior"
-                    >
-                        &lt;
-                    </button>
-                    <span className="px-2 sm:px-3 py-1 text-gray-700 dark:text-gray-200 font-semibold rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm text-xs sm:text-sm">
-                        Página {paginaAtual} de {totalPaginas}
-                    </span>
-                    <button
-                        className="px-2 sm:px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 disabled:opacity-50 shadow-sm transition text-xs sm:text-sm"
-                        onClick={() => setPaginaAtual(paginaAtual + 1)}
-                        disabled={paginaAtual === totalPaginas}
-                        aria-label="Próxima página"
-                    >
-                        &gt;
-                    </button>
-                </div>
             </div>
             {/* Painel lateral responsivo */}
             {/* Fixo à direita em telas extra grandes */}

@@ -1,41 +1,29 @@
 import React, { useState } from "react";
-import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Button } from '../ui/Button';
 
 interface Tipo {
     id: number;
     nome: string;
 }
 
-const tiposMock: Tipo[] = [
-    { id: 1, nome: "Tipo 1" },
-    { id: 2, nome: "Tipo 2" },
-    { id: 3, nome: "Tipo 3" },
-    { id: 4, nome: "Tipo 4" },
-    { id: 5, nome: "Tipo 5" },
-    { id: 6, nome: "Tipo 6" },
-    { id: 7, nome: "Tipo 7" },
-];
+const tiposMock: Tipo[] = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    nome: `Tipo ${i + 1}`
+}));
 
 const TipoList: React.FC = () => {
     const navigate = useNavigate();
     const [tipos, setTipos] = useState<Tipo[]>(tiposMock);
-    const [paginaAtual, setPaginaAtual] = useState(1);
     const [search, setSearch] = useState("");
-    const [itensPorPagina, setItensPorPagina] = useState(5);
     const tiposFiltrados = tipos.filter((t) => t.nome.toLowerCase().includes(search.toLowerCase()));
-    const totalPaginas = Math.ceil(tiposFiltrados.length / itensPorPagina);
-    const tiposPagina = tiposFiltrados.slice((paginaAtual - 1) * itensPorPagina, paginaAtual * itensPorPagina);
-
     const [editId, setEditId] = useState<number | null>(null);
     const [editNome, setEditNome] = useState("");
     const [showNovo, setShowNovo] = useState(false);
     const [novoNome, setNovoNome] = useState("");
     const [deleteId, setDeleteId] = useState<number | null>(null);
-    const [mensagem, setMensagem] = useState<string>("");
+    const [mensagem, setMensagem] = useState("");
 
-    // Mensagem temporária removida pois não está sendo utilizada
     // Edição inline
     const handleEdit = (tipo: Tipo) => {
         setEditId(tipo.id);
@@ -61,10 +49,9 @@ const TipoList: React.FC = () => {
         setShowNovo(false);
         setMensagem("Tipo cadastrado com sucesso!");
         setTimeout(() => setMensagem(""), 2500);
-        setPaginaAtual(totalPaginas + 1); // Vai para última página
     };
 
-    // Exclusão
+    // Excluir tipo
     const handleDelete = (id: number) => {
         setTipos((prev) => prev.filter((t) => t.id !== id));
         setDeleteId(null);
@@ -73,157 +60,125 @@ const TipoList: React.FC = () => {
     };
 
     return (
-        <div className="w-full min-w-0 py-4 px-2 sm:px-4 md:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
-            <div className="max-w-2xl mx-auto min-w-0">
-                {/* Toast de mensagem temporária */}
-                {/* Toast de mensagem fixa alinhada com a barra de pesquisa, levemente para a direita */}
-                <div className="fixed z-50" style={{ top: 'calc(80px + 1.5rem)', left: 'calc(36% - 53px)', transform: 'translateX(0)' }}>
-                    {mensagem && (
-                        <div
-                            className={`px-3 py-1 rounded shadow text-sm font-medium text-left transition-opacity duration-300 bg-green-500 text-white`}
-                            style={{ minWidth: '180px', height: '32px', lineHeight: '30px', opacity: mensagem ? 1 : 0 }}
+        <section className="w-full min-w-0 min-h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 transition-colors py-3 sm:py-6 font-inter">
+            <div className="w-full min-w-0 px-2 sm:px-4 md:px-8 flex flex-col flex-1 items-start">
+                <div className="w-full flex flex-col flex-1 md:pr-8 md:pl-2 xl:pr-16 xl:pl-6 items-start">
+                    {/* Título com ícone de voltar */}
+                    <div className="w-full flex items-center mb-2">
+                        <button
+                            className="mr-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            onClick={() => navigate(-1)}
+                            aria-label="Voltar"
                         >
+                            <FaArrowLeft className="text-xl text-gray-700 dark:text-gray-200" />
+                        </button>
+                        <h2 className="text-2xl font-bold text-left text-gray-900 dark:text-white pl-0">Tipos</h2>
+                    </div>
+                    {/* Campo de pesquisa e botões abaixo do título */}
+                    <div className="w-full max-w-2xl mb-4 ml-0 mr-auto flex flex-col md:flex-row md:items-center md:gap-4">
+                        <input
+                            type="text"
+                            className="w-full md:w-64 p-2 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900 transition-all"
+                            placeholder="Pesquisar tipo..."
+                            value={search}
+                            onChange={e => { setSearch(e.target.value); }}
+                            style={{ minWidth: 0 }}
+                        />
+                        <div className="flex gap-2 mt-2 md:mt-0">
+                            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => setShowNovo((v) => !v)}>Novo Tipo</button>
+                        </div>
+                    </div>
+                    {showNovo && (
+                        <div className="mb-4 flex gap-2 w-full max-w-2xl ml-0 mr-auto">
+                            <input
+                                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+                                placeholder="Nome do tipo"
+                                value={novoNome}
+                                onChange={(e) => setNovoNome(e.target.value)}
+                                autoFocus
+                            />
+                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded" onClick={handleNovo}>Salvar</button>
+                            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 rounded" onClick={() => setShowNovo(false)}>Cancelar</button>
+                        </div>
+                    )}
+                    {/* Scrollbar customizada e tabela responsiva */}
+                    <style>{`
+                        #tipos-scroll::-webkit-scrollbar { display: none !important; }
+                        #tipos-scroll { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+                    `}</style>
+                    <div
+                        id="tipos-scroll"
+                        className="overflow-x-auto overflow-y-auto max-h-[70vh] min-h-[300px] custom-scrollbar-hide w-full max-w-2xl ml-0 mr-auto rounded-xl shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                    >
+                        <table className="min-w-full w-full text-xs sm:text-sm text-left text-gray-900 dark:text-white">
+                            <thead>
+                                <tr>
+                                    <th className="px-2 sm:px-4 py-2">N°</th>
+                                    <th className="px-2 sm:px-4 py-2">Nome</th>
+                                    <th className="px-2 sm:px-4 py-2 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tiposFiltrados.length === 0 && (
+                                    <tr><td colSpan={3} className="px-2 sm:px-4 py-8 text-center text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Nenhum tipo cadastrado.</td></tr>
+                                )}
+                                {tiposFiltrados.map((tipo) => (
+                                    <tr key={tipo.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                        <td className="px-2 sm:px-4 py-2">{tipo.id}</td>
+                                        <td className="px-2 sm:px-4 py-2">
+                                            {editId === tipo.id ? (
+                                                <input
+                                                    className="p-1 border rounded dark:bg-gray-700 dark:text-white"
+                                                    value={editNome}
+                                                    onChange={(e) => setEditNome(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <span>{tipo.nome}</span>
+                                            )}
+                                        </td>
+                                        <td className="px-2 sm:px-4 py-2 text-center">
+                                            {editId === tipo.id ? (
+                                                <>
+                                                    <button className="text-green-600 hover:text-green-800 mr-2" onClick={() => handleEditSave(tipo.id)} title="Salvar">✔</button>
+                                                    <button className="text-red-600 hover:text-red-800" onClick={handleEditCancel} title="Cancelar">✖</button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button className="text-blue-600 hover:text-blue-800 mr-2" onClick={() => handleEdit(tipo)} title="Editar">✎</button>
+                                                    <button className="text-red-600 hover:text-red-800" onClick={() => setDeleteId(tipo.id)} title="Excluir">🗑</button>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/* Modal de confirmação de exclusão */}
+                    {deleteId !== null && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+                            <div className="bg-white dark:bg-gray-800 rounded shadow-lg p-6 w-full max-w-sm">
+                                <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-100">Confirmar exclusão</h3>
+                                <p className="mb-4 text-gray-700 dark:text-gray-300">Deseja realmente excluir este tipo?</p>
+                                <div className="flex justify-end gap-2">
+                                    <button className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded" onClick={() => handleDelete(deleteId)}>Excluir</button>
+                                    <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" onClick={() => setDeleteId(null)}>Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {/* Mensagem de feedback */}
+                    {mensagem && (
+                        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded shadow-lg z-50">
                             {mensagem}
                         </div>
                     )}
                 </div>
-                <h2 className="text-center text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Tipos</h2>
-                {/* Barra de pesquisa */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
-                    <input
-                        type="text"
-                        className="w-full md:w-64 p-2 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 rounded-lg shadow-sm dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:focus:border-blue-400 dark:focus:ring-blue-900 transition-all"
-                        placeholder="Pesquisar tipo..."
-                        value={search}
-                        onChange={e => { setSearch(e.target.value); setPaginaAtual(1); }}
-                        style={{ minWidth: 0 }}
-                    />
-                </div>
-                {/* Botões de ação */}
-                <div className="flex justify-between items-center mb-4">
-                    <button
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => setShowNovo((v) => !v)}
-                    >
-                        Novo Tipo
-                    </button>
-                    {/* Botão Voltar responsivo */}
-                    <div className="flex items-center">
-                        <button
-                            className="block sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150 bg-gray-500 text-white hover:bg-gray-700 focus:bg-gray-700"
-                            onClick={() => navigate(-1)}
-                            aria-label="Voltar"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="hidden sm:block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2"
-                        >
-                            Voltar
-                        </button>
-                    </div>
-                </div>
-                {/* Formulário novo tipo */}
-                {showNovo && (
-                    <div className="mb-4 flex gap-2">
-                        <input
-                            className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                            placeholder="Nome do tipo"
-                            value={novoNome}
-                            onChange={(e) => setNovoNome(e.target.value)}
-                            autoFocus
-                        />
-                        <Button className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded" onClick={handleNovo}>Salvar</Button>
-                        <Button variant="outline" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 rounded" onClick={() => setShowNovo(false)}>Cancelar</Button>
-                    </div>
-                )}
-                {/* Tabela de tipos */}
-                <div className="overflow-x-auto w-full">
-                    <table className="min-w-full sm:min-w-[640px] table-auto w-full bg-white dark:bg-gray-800 rounded shadow">
-                        <thead>
-                            <tr>
-                                <th className="px-4 py-2 border-b text-left">N°</th>
-                                <th className="px-4 py-2 border-b text-left">Nome</th>
-                                <th className="px-4 py-2 border-b text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tiposPagina.length === 0 && (
-                                <tr><td colSpan={3} className="text-center py-4 text-gray-500 dark:text-gray-400">Nenhum tipo cadastrado.</td></tr>
-                            )}
-                            {tiposPagina.map((tipo) => (
-                                <tr key={tipo.id} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <td className="px-4 py-2 border-b">{tipo.id}</td>
-                                    <td className="px-4 py-2 border-b">
-                                        {editId === tipo.id ? (
-                                            <input
-                                                className="p-1 border rounded dark:bg-gray-700 dark:text-white"
-                                                value={editNome}
-                                                onChange={(e) => setEditNome(e.target.value)}
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <span>{tipo.nome}</span>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-2 border-b text-center">
-                                        {editId === tipo.id ? (
-                                            <>
-                                                <Button variant="primary" className="text-green-600 hover:text-green-800 mr-2" onClick={() => handleEditSave(tipo.id)} title="Salvar"><FaCheck /></Button>
-                                                <Button variant="danger" className="text-red-600 hover:text-red-800" onClick={handleEditCancel} title="Cancelar"><FaTimes /></Button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Button variant="primary" className="text-blue-600 hover:text-blue-800 mr-2" onClick={() => handleEdit(tipo)} title="Editar"><FaEdit /></Button>
-                                                <Button variant="danger" className="text-red-600 hover:text-red-800" onClick={() => setDeleteId(tipo.id)} title="Excluir"><FaTrash /></Button>
-                                            </>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {/* Paginação e botão de voltar */}
-                <div className="flex justify-between items-center gap-2 mt-4">
-                    <a href="/estoque" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Voltar</a>
-                    <div className="flex justify-center items-center gap-2 flex-1">
-                        <Button variant="outline" className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === 1} onClick={() => setPaginaAtual(paginaAtual - 1)}>{'<'}</Button>
-                        <span className="text-gray-700 dark:text-gray-300">{paginaAtual} de {totalPaginas}</span>
-                        <Button variant="outline" className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded" disabled={paginaAtual === totalPaginas || totalPaginas === 0} onClick={() => setPaginaAtual(paginaAtual + 1)}>{'>'}</Button>
-                        {/* Select de quantidade por página ao lado direito do paginator */}
-                        <div className="flex items-center gap-2 ml-4">
-                            <label className="text-gray-700 dark:text-gray-300">Exibir</label>
-                            <select
-                                className="p-2 border rounded dark:bg-gray-700 dark:text-white"
-                                value={itensPorPagina}
-                                onChange={e => { setItensPorPagina(Number(e.target.value)); setPaginaAtual(1); }}
-                            >
-                                {[5, 10, 20, 50].map(q => <option key={q} value={q}>{q}</option>)}
-                            </select>
-                            <span className="text-gray-700 dark:text-gray-300">por página</span>
-                        </div>
-                    </div>
-                </div>
-                {/* Modal de confirmação de exclusão */}
-                {deleteId !== null && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                        <div className="bg-white dark:bg-gray-800 rounded shadow-lg p-6 w-full max-w-sm">
-                            <h3 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-100">Confirmar exclusão</h3>
-                            <p className="mb-4 text-gray-700 dark:text-gray-300">Deseja realmente excluir este tipo?</p>
-                            <div className="flex justify-end gap-2">
-                                <Button variant="danger" className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded" onClick={() => handleDelete(deleteId)}>Excluir</Button>
-                                <Button variant="outline" className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" onClick={() => setDeleteId(null)}>Cancelar</Button>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
-        </div>
+        </section>
     );
 };
 
 export default TipoList;
+

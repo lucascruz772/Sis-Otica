@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { IMaskInput } from "react-imask";
 
 const ClienteCadastro: React.FC = () => {
     const [form, setForm] = useState({
@@ -16,7 +17,7 @@ const ClienteCadastro: React.FC = () => {
     });
     const navigate = useNavigate();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { target: { name: string, value: string } }) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
@@ -30,11 +31,13 @@ const ClienteCadastro: React.FC = () => {
         <section className="w-full h-full min-h-[calc(100vh-80px)] flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors px-2 sm:px-4">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white dark:bg-gray-800 shadow-lg rounded-xl py-6 px-2 sm:py-8 sm:px-4 md:px-8 w-full max-w-2xl mx-auto space-y-6 text-gray-900 dark:text-white mt-4 sm:mt-8"
+                className="w-full max-w-2xl mt-4 sm:mt-8 ml-0 text-gray-900 dark:text-white space-y-6"
                 autoComplete="off"
             >
                 <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-900 dark:text-white text-left">Cadastro de Cliente</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+                {/* Dados */}
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 mt-4">Dados</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 w-full">
                     <div>
                         <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="nome">Nome</label>
                         <input
@@ -45,45 +48,6 @@ const ClienteCadastro: React.FC = () => {
                             onChange={handleChange}
                             className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                             placeholder="Ex: João"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                            placeholder="Email"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="telefone">Telefone</label>
-                        <input
-                            type="text"
-                            id="telefone"
-                            name="telefone"
-                            value={form.telefone}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                            placeholder="(00) 00000-0000"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="cpf">CPF</label>
-                        <input
-                            type="text"
-                            id="cpf"
-                            name="cpf"
-                            value={form.cpf}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                            placeholder="000.000.000-00"
                             required
                         />
                     </div>
@@ -100,13 +64,60 @@ const ClienteCadastro: React.FC = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="cep">CEP</label>
+                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="cpf">CPF</label>
+                        <IMaskInput
+                            mask="000.000.000-00"
+                            value={form.cpf}
+                            name="cpf"
+                            id="cpf"
+                            onAccept={(value) => handleChange({ target: { name: 'cpf', value: value as string } })}
+                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                            placeholder="000.000.000-00"
+                            required
+                        />
+                    </div>
+                </div>
+                {/* Contato */}
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 mt-6">Contato</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full">
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="telefone">Telefone</label>
+                        <IMaskInput
+                            mask="(00) 00000-0000"
+                            value={form.telefone}
+                            name="telefone"
+                            id="telefone"
+                            onAccept={(value) => handleChange({ target: { name: 'telefone', value: value as string } })}
+                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                            placeholder="(00) 00000-0000"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="email">Email</label>
                         <input
-                            type="text"
-                            id="cep"
-                            name="cep"
-                            value={form.cep}
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={form.email}
                             onChange={handleChange}
+                            className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                            placeholder="Email"
+                            required
+                        />
+                    </div>
+                </div>
+                {/* Endereço */}
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 mt-6">Endereço</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+                    <div>
+                        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-white" htmlFor="cep">CEP</label>
+                        <IMaskInput
+                            mask="00000-000"
+                            value={form.cep}
+                            name="cep"
+                            id="cep"
+                            onAccept={(value) => handleChange({ target: { name: 'cep', value: value as string } })}
                             className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                             placeholder="CEP"
                             required

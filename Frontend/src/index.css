@@ -78,3 +78,12 @@ button:focus-visible {
   }
 }
 */
+
+/* Scrollbar invisível para custom-scrollbar-hide */
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.custom-scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

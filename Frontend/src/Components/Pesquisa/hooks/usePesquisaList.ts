@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
-const PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 50, 100];
+const INITIAL_VISIBLE = 20;
+const LOAD_MORE_STEP = 20;
 
 export function usePesquisaList() {
   interface Ordem {
@@ -28,8 +29,7 @@ export function usePesquisaList() {
   const [status, setStatus] = useState("");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   useEffect(() => {
     setLoading(true);
@@ -124,11 +124,21 @@ export function usePesquisaList() {
       (dataFim === "" || os.dataPedido <= dataFim)
   );
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paginated = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  // Scroll infinito: itens visíveis
+  const visibleItems = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+  const loadMore = useCallback(() => {
+    if (hasMore)
+      setVisibleCount((prev) =>
+        Math.min(prev + LOAD_MORE_STEP, filtered.length)
+      );
+  }, [hasMore, filtered.length]);
+  const resetVisible = useCallback(() => setVisibleCount(INITIAL_VISIBLE), []);
+
+  // Sempre que filtros mudarem, reseta o visibleCount
+  useEffect(() => {
+    resetVisible();
+  }, [searchCliente, searchOS, status, dataInicio, dataFim, resetVisible]);
 
   return {
     loading,
@@ -146,13 +156,9 @@ export function usePesquisaList() {
     setDataInicio,
     dataFim,
     setDataFim,
-    currentPage,
-    setCurrentPage,
-    pageSize,
-    setPageSize,
-    PAGE_SIZE_OPTIONS,
-    totalPages,
-    paginated,
     filtered,
+    visibleItems,
+    hasMore,
+    loadMore,
   };
 }

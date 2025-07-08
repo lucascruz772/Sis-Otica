@@ -32,13 +32,6 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, ful
     // Detecta se a sidebar está oculta (minimized e fullWidth true)
     const sidebarOculta = isMobile && minimized && fullWidth;
 
-    // Garante darkmode como padrão (executa apenas uma vez)
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            document.documentElement.classList.add('dark');
-        }
-    }, []);
-
     return (
         <nav
             className={
@@ -80,14 +73,6 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, ful
                 <div className={isMobile ? "font-bold text-base text-gray-900 dark:text-white" : "font-bold text-xl text-gray-900 dark:text-white"}>
                     Sis-Ótica
                 </div>
-                {/* Link para a UI Demo (apenas para dev, pode remover em produção) */}
-                <a
-                    href="/ui-demo"
-                    className="ml-4 px-3 py-1.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-xs font-semibold hover:bg-blue-200 dark:hover:bg-blue-800 transition hidden md:inline-block"
-                    title="Demonstração de UI"
-                >
-                    UI Demo
-                </a>
                 <div style={{ position: "relative" }}>
                     <button
                         onClick={() => setDropdownOpen((open) => !open)}

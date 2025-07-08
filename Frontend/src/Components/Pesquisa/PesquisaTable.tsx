@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface OrdemServico {
     id: number;
@@ -32,73 +32,86 @@ const statusLabel = (status: string) => {
     }
 };
 
-const PesquisaTable: React.FC<PesquisaTableProps> = ({ paginated, servicosMap, clientesMap, vendedoresMap }) => (
-    <div className="hidden md:block pr-2 xl:pr-8">
-        <div className="overflow-auto rounded-xl shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-            <table className="min-w-full w-full text-xs sm:text-sm text-left text-gray-900 dark:text-white">
-                <thead>
-                    <tr>
-                        <th className="px-2 sm:px-4 py-2">ID</th>
-                        <th className="px-2 sm:px-4 py-2">SERVIÇO</th>
-                        <th className="px-2 sm:px-4 py-2">CLIENTE</th>
-                        <th className="px-2 sm:px-4 py-2">VENDEDOR</th>
-                        <th className="px-2 sm:px-4 py-2">LENTES</th>
-                        <th className="px-2 sm:px-4 py-2">DATA PEDIDO</th>
-                        <th className="px-2 sm:px-4 py-2">STATUS</th>
-                        <th className="px-2 sm:px-4 py-2">N° Contato</th>
-                        <th className="px-2 sm:px-4 py-2">PREVISÃO ENTREGA</th>
-                        <th className="px-2 sm:px-4 py-2">AÇÃO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {paginated.map(os => (
-                        <tr key={os.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition block md:table-row">
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['ID:'] md:before:content-none">{os.id}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Serviço:'] md:before:content-none">{servicosMap[Number(os.servico)] || os.servico}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Cliente:'] md:before:content-none">{clientesMap[Number(os.cliente)] || os.cliente}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Vendedor:'] md:before:content-none">{vendedoresMap[Number(os.vendedor)] || os.vendedor}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Lentes:'] md:before:content-none">{os.lentes}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Data Pedido:'] md:before:content-none">{os.dataPedido}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Status:'] md:before:content-none">{statusLabel(os.status)}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['N° Contato:'] md:before:content-none">
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                    {os.telefone}
-                                    <a
-                                        href={`https://wa.me/55${os.telefone.replace(/\D/g, "")}?text=Olá! ${clientesMap[Number(os.cliente)] || os.cliente}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <img
-                                            width="18"
-                                            height="18"
-                                            src="https://img.icons8.com/color/48/whatsapp--v1.png"
-                                            alt="WhatsApp"
-                                        />
-                                    </a>
-                                </div>
-                            </td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Previsão Entrega:'] md:before:content-none">{os.previsaoEntrega}</td>
-                            <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Ação:'] md:before:content-none">
-                                <Link
-                                    to={`/cadastro-os?id=${os.id}`}
-                                    className="text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm"
-                                >
-                                    Visualizar
-                                </Link>
-                            </td>
-                        </tr>
-                    ))}
-                    {paginated.length === 0 && (
+const PesquisaTable: React.FC<PesquisaTableProps> = ({ paginated, servicosMap, clientesMap, vendedoresMap }) => {
+    const navigate = useNavigate();
+    return (
+        <div className="hidden md:block pr-2 xl:pr-8">
+            <div className="overflow-auto rounded-xl shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                <table className="min-w-full w-full text-xs sm:text-sm text-left text-gray-900 dark:text-white">
+                    <thead>
                         <tr>
-                            <td colSpan={10} className="px-2 sm:px-4 py-8 text-center text-gray-500 dark:text-gray-300 text-xs sm:text-sm">
-                                Nenhuma O.S encontrada.
-                            </td>
+                            <th className="px-2 sm:px-4 py-2">ID</th>
+                            <th className="px-2 sm:px-4 py-2">SERVIÇO</th>
+                            <th className="px-2 sm:px-4 py-2">CLIENTE</th>
+                            <th className="px-2 sm:px-4 py-2">VENDEDOR</th>
+                            <th className="px-2 sm:px-4 py-2">LENTES</th>
+                            <th className="px-2 sm:px-4 py-2">DATA PEDIDO</th>
+                            <th className="px-2 sm:px-4 py-2">STATUS</th>
+                            <th className="px-2 sm:px-4 py-2">N° Contato</th>
+                            <th className="px-2 sm:px-4 py-2">PREVISÃO ENTREGA</th>
+                            <th className="px-2 sm:px-4 py-2">VISUALIZAR OS</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {paginated.map(os => (
+                            <tr
+                                key={os.id}
+                                className="hover:bg-gray-100 dark:hover:bg-gray-700 transition block md:table-row cursor-pointer"
+                                onDoubleClick={() => navigate(`/cadastro-os?id=${os.id}`)}
+                            >
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['ID:'] md:before:content-none">
+                                    <Link to={`/cadastro-os?id=${os.id}`} className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">{os.id}</Link>
+                                </td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Serviço:'] md:before:content-none">{servicosMap[Number(os.servico)] || os.servico}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Cliente:'] md:before:content-none">{clientesMap[Number(os.cliente)] || os.cliente}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Vendedor:'] md:before:content-none">{vendedoresMap[Number(os.vendedor)] || os.vendedor}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Lentes:'] md:before:content-none">{os.lentes}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Data Pedido:'] md:before:content-none">{os.dataPedido}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Status:'] md:before:content-none">{statusLabel(os.status)}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['N° Contato:'] md:before:content-none">
+                                    <div className="flex items-center gap-1 sm:gap-2">
+                                        {os.telefone}
+                                        <a
+                                            href={`https://wa.me/55${os.telefone.replace(/\D/g, "")}?text=Olá! ${clientesMap[Number(os.cliente)] || os.cliente}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <img
+                                                width="18"
+                                                height="18"
+                                                src="https://img.icons8.com/color/48/whatsapp--v1.png"
+                                                alt="WhatsApp"
+                                            />
+                                        </a>
+                                    </div>
+                                </td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Previsão Entrega:'] md:before:content-none">{os.previsaoEntrega}</td>
+                                <td className="px-2 sm:px-4 py-2 block md:table-cell before:content-['Visualizar OS:'] md:before:content-none">
+                                    <button
+                                        onClick={() => navigate(`/cadastro-os?id=${os.id}`)}
+                                        aria-label="Visualizar Ordem de Serviço"
+                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 focus:outline-none"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12s3.75-7.5 9.75-7.5 9.75 7.5 9.75 7.5-3.75 7.5-9.75 7.5S2.25 12 2.25 12z" />
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        {paginated.length === 0 && (
+                            <tr>
+                                <td colSpan={10} className="px-2 sm:px-4 py-8 text-center text-gray-500 dark:text-gray-300 text-xs sm:text-sm">
+                                    Nenhuma O.S encontrada.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default PesquisaTable;

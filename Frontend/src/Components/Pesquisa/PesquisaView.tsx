@@ -3,16 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from '../ui/Button';
 
 // Tipos para os dados da OS
-interface Cliente {
+export interface Cliente {
     id: number;
     nome: string;
 }
 
-interface Vendedor {
+export interface Vendedor {
     first_name: string;
 }
 
-interface VisualizarOS {
+export interface VisualizarOS {
     id: number;
     solicitar_avaliacao?: boolean;
     ANEXO?: { url: string };
@@ -116,14 +116,13 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         ← Voltar
                     </Button>
                 </div>
-
                 {/* Toast de sucesso fixo, nunca empurra o layout */}
                 {showMsg && (
                     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 p-4 rounded-xl border bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-700 text-center font-semibold shadow-lg min-w-[220px] max-w-[90vw]">
                         Dados salvos com sucesso!
                     </div>
                 )}
-                {/* Mensagens do backend (mantém no fluxo, pois podem ser múltiplas e não são toast) */}
+                {/* Mensagens do backend */}
                 {messages.length > 0 && (
                     <div className="mb-6 space-y-3">
                         {messages.map((msg, i) => (
@@ -139,7 +138,7 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         ))}
                     </div>
                 )}
-
+                {/* Avaliação */}
                 {VISUALIZAR_OS.solicitar_avaliacao && (
                     <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-900 p-4 rounded-xl flex items-center gap-2 shadow-sm dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-700">
                         <span className="text-xl">⚠️</span>
@@ -154,7 +153,6 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         </p>
                     </div>
                 )}
-
                 <div className="space-y-10">
                     <h1 className="text-4xl font-extrabold text-center text-blue-800 dark:text-white tracking-tight drop-shadow mb-8">
                         {unidade}{osData.id}
@@ -183,221 +181,257 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
                         )}
                     </div>
 
-                    {/* Grid responsivo, sem card, ocupando toda a largura */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full">
-                        {/* Data Pedido */}
+                    {/* Agrupamento e títulos das seções */}
+                    <div className="space-y-8 w-full">
+                        {/* Seção Venda */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Data Pedido</label>
-                            {editMode ? (
-                                <input
-                                    name="DATA_SOLICITACAO"
-                                    type="date"
-                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                    value={toLocalDateInputValue(osData.DATA_SOLICITACAO)}
-                                    onChange={handleChange}
-                                />
-                            ) : (
-                                <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
-                                    {new Date(osData.DATA_SOLICITACAO).toLocaleDateString()}
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Venda</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {/* Data Pedido */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Data Pedido</label>
+                                    {editMode ? (
+                                        <input
+                                            name="DATA_SOLICITACAO"
+                                            type="date"
+                                            className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                            value={toLocalDateInputValue(osData.DATA_SOLICITACAO)}
+                                            onChange={handleChange}
+                                        />
+                                    ) : (
+                                        <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
+                                            {new Date(osData.DATA_SOLICITACAO).toLocaleDateString()}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        {/* Previsão Entrega */}
-                        <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Previsão Entrega</label>
-                            {editMode ? (
-                                <input
-                                    name="PREVISAO_ENTREGA"
-                                    type="date"
-                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                    value={toLocalDateInputValue(osData.PREVISAO_ENTREGA)}
-                                    onChange={handleChange}
-                                />
-                            ) : (
-                                <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
-                                    {new Date(osData.PREVISAO_ENTREGA).toLocaleDateString()}
+                                {/* Previsão Entrega */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Previsão Entrega</label>
+                                    {editMode ? (
+                                        <input
+                                            name="PREVISAO_ENTREGA"
+                                            type="date"
+                                            className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                            value={toLocalDateInputValue(osData.PREVISAO_ENTREGA)}
+                                            onChange={handleChange}
+                                        />
+                                    ) : (
+                                        <div className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700">
+                                            {new Date(osData.PREVISAO_ENTREGA).toLocaleDateString()}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        {/* Vendedor */}
-                        <div>
-                            <label htmlFor="vendedor-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
-                            <input
-                                id="vendedor-input"
-                                name="VENDEDOR"
-                                readOnly
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.VENDEDOR.first_name}
-                            />
-                        </div>
-                        {/* Cliente */}
-                        <div>
-                            <label htmlFor="cliente-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Cliente</label>
-                            <Link
-                                to={`/cliente/${typeof osData.CLIENTE === 'object' ? osData.CLIENTE.id : ''}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <input
-                                    id="cliente-input"
-                                    name="CLIENTE"
-                                    readOnly
-                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                                    value={typeof osData.CLIENTE === 'object' ? osData.CLIENTE.nome : osData.CLIENTE}
-                                />
-                            </Link>
-                        </div>
-                        {/* Tipo de Serviço */}
-                        <div>
-                            <label htmlFor="servico-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Tipo de Serviço</label>
-                            <input
-                                id="servico-input"
-                                name="SERVICO"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.SERVICO}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        {/* Laboratório */}
-                        <div>
-                            <label htmlFor="laboratorio-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Laboratório</label>
-                            <input
-                                id="laboratorio-input"
-                                name="LABORATORIO"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.LABORATORIO}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        {/* OD/ OE/ AD/ DNP/ P/ DPA/ DIAG/ V/ H/ ALT/ ARM */}
-                        {[
-                            { label: "OD - ESF", name: "OD_ESF", value: osData.OD_ESF },
-                            { label: "OD - CIL", name: "OD_CIL", value: osData.OD_CIL },
-                            { label: "OD - EIXO", name: "OD_EIXO", value: osData.OD_EIXO },
-                            { label: "OE - ESF", name: "OE_ESF", value: osData.OE_ESF },
-                            { label: "OE - CIL", name: "OE_CIL", value: osData.OE_CIL },
-                            { label: "OE - EIXO", name: "OE_EIXO", value: osData.OE_EIXO },
-                            { label: "AD", name: "AD", value: osData.AD },
-                            { label: "DNP", name: "DNP", value: osData.DNP },
-                            { label: "P", name: "P", value: osData.P },
-                            { label: "DPA", name: "DPA", value: osData.DPA },
-                            { label: "DIAG", name: "DIAG", value: osData.DIAG },
-                            { label: "V", name: "V", value: osData.V },
-                            { label: "H", name: "H", value: osData.H },
-                            { label: "ALT", name: "ALT", value: osData.ALT },
-                            { label: "ARM", name: "ARM", value: osData.ARM }
-                        ].map(({ label, name, value }) => (
-                            <div key={label}>
-                                <label htmlFor={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`} className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">{label}</label>
-                                <input
-                                    id={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`}
-                                    name={name}
-                                    readOnly={!editMode}
-                                    className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                    value={value}
-                                    onChange={handleChange}
-                                />
+                                {/* Vendedor */}
+                                <div>
+                                    <label htmlFor="vendedor-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Vendedor</label>
+                                    <input
+                                        id="vendedor-input"
+                                        name="VENDEDOR"
+                                        readOnly
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.VENDEDOR.first_name}
+                                    />
+                                </div>
+                                {/* Cliente */}
+                                <div>
+                                    <label htmlFor="cliente-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Cliente</label>
+                                    <Link
+                                        to={`/cliente/${typeof osData.CLIENTE === 'object' ? osData.CLIENTE.id : ''}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <input
+                                            id="cliente-input"
+                                            name="CLIENTE"
+                                            readOnly
+                                            className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                            value={typeof osData.CLIENTE === 'object' ? osData.CLIENTE.nome : osData.CLIENTE}
+                                        />
+                                    </Link>
+                                </div>
                             </div>
-                        ))}
-                        {/* Montagem */}
-                        <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Montagem</label>
-                            <input
-                                name="MONTAGEM"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.MONTAGEM}
-                                onChange={handleChange}
-                            />
                         </div>
-                        {/* Lentes */}
+                        {/* Seção Serviço */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Lentes</label>
-                            <input
-                                name="LENTES"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.LENTES}
-                                onChange={handleChange}
-                            />
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Serviço</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {/* Tipo de Serviço */}
+                                <div>
+                                    <label htmlFor="servico-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Tipo de Serviço</label>
+                                    <input
+                                        id="servico-input"
+                                        name="SERVICO"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.SERVICO}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Laboratório */}
+                                <div>
+                                    <label htmlFor="laboratorio-input" className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Laboratório</label>
+                                    <input
+                                        id="laboratorio-input"
+                                        name="LABORATORIO"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.LABORATORIO}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        {/* Armação */}
+                        {/* Seção Lentes */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Armação</label>
-                            <input
-                                name="ARMACAO"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.ARMACAO}
-                                onChange={handleChange}
-                            />
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Lentes</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {/* OD/ OE/ AD/ DNP/ P/ DPA/ DIAG/ V/ H/ ALT/ ARM */}
+                                {[
+                                    { label: "OD - ESF", name: "OD_ESF", value: osData.OD_ESF },
+                                    { label: "OD - CIL", name: "OD_CIL", value: osData.OD_CIL },
+                                    { label: "OD - EIXO", name: "OD_EIXO", value: osData.OD_EIXO },
+                                    { label: "OE - ESF", name: "OE_ESF", value: osData.OE_ESF },
+                                    { label: "OE - CIL", name: "OE_CIL", value: osData.OE_CIL },
+                                    { label: "OE - EIXO", name: "OE_EIXO", value: osData.OE_EIXO },
+                                    { label: "AD", name: "AD", value: osData.AD },
+                                    { label: "DNP", name: "DNP", value: osData.DNP },
+                                    { label: "P", name: "P", value: osData.P },
+                                    { label: "DPA", name: "DPA", value: osData.DPA },
+                                    { label: "DIAG", name: "DIAG", value: osData.DIAG },
+                                    { label: "V", name: "V", value: osData.V },
+                                    { label: "H", name: "H", value: osData.H },
+                                    { label: "ALT", name: "ALT", value: osData.ALT },
+                                    { label: "ARM", name: "ARM", value: osData.ARM }
+                                ].map(({ label, name, value }) => (
+                                    <div key={label}>
+                                        <label htmlFor={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`} className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">{label}</label>
+                                        <input
+                                            id={`input-${label.replace(/\s|\W/g, '').toLowerCase()}`}
+                                            name={name}
+                                            readOnly={!editMode}
+                                            className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                            value={value}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        {/* Observação */}
-                        <div className="sm:col-span-2 md:col-span-4">
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Observação</label>
-                            <textarea
-                                name="OBSERVACAO"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none resize-none"
-                                rows={3}
-                                value={osData.OBSERVACAO}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        {/* Pagamento */}
+                        {/* Seção Montagem, Lentes, Armação */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Pagamento</label>
-                            <input
-                                name="FORMA_PAG"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={editMode ? osData.FORMA_PAG : (formaPagLabels[osData.FORMA_PAG] || "-")}
-                                onChange={handleChange}
-                            />
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Montagem, Lentes e Armação</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {/* Montagem */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Montagem</label>
+                                    <input
+                                        name="MONTAGEM"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.MONTAGEM}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Lentes */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Lentes</label>
+                                    <input
+                                        name="LENTES"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.LENTES}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Armação */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Armação</label>
+                                    <input
+                                        name="ARMACAO"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.ARMACAO}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        {/* Valor */}
+                        {/* Seção Observação */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor</label>
-                            <input
-                                name="VALOR"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.VALOR}
-                                onChange={handleChange}
-                            />
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Observação</h2>
+                            <div className="grid grid-cols-1">
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Observação</label>
+                                    <textarea
+                                        name="OBSERVACAO"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none resize-none"
+                                        rows={3}
+                                        value={osData.OBSERVACAO}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        {/* Parcelas */}
+                        {/* Seção Financeiro */}
                         <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Parcelas</label>
-                            <input
-                                name="QUANTIDADE_PARCELA"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.QUANTIDADE_PARCELA + "x"}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        {/* Valor Pago */}
-                        <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor Pago</label>
-                            <input
-                                name="ENTRADA"
-                                readOnly={!editMode}
-                                className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
-                                value={osData.ENTRADA}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        {/* Status */}
-                        <div>
-                            <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Status</label>
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow ${statusLabels[osData.STATUS]?.className || "bg-gray-300 text-gray-800"}`}>
-                                {statusLabels[osData.STATUS]?.label || "-"}
-                            </span>
+                            <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-4 border-b border-blue-200 dark:border-blue-800 pb-1">Financeiro</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                                {/* Pagamento */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Pagamento</label>
+                                    <input
+                                        name="FORMA_PAG"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={editMode ? osData.FORMA_PAG : (formaPagLabels[osData.FORMA_PAG] || "-")}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Valor */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor</label>
+                                    <input
+                                        name="VALOR"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.VALOR}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Parcelas */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Parcelas</label>
+                                    <input
+                                        name="QUANTIDADE_PARCELA"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.QUANTIDADE_PARCELA + "x"}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Valor Pago */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Valor Pago</label>
+                                    <input
+                                        name="ENTRADA"
+                                        readOnly={!editMode}
+                                        className="w-full bg-blue-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-blue-900 dark:text-blue-100 border border-blue-100 dark:border-gray-700 focus:outline-none"
+                                        value={osData.ENTRADA}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                {/* Status */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Status</label>
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow ${statusLabels[osData.STATUS]?.className || "bg-gray-300 text-gray-800"}`}>
+                                        {statusLabels[osData.STATUS]?.label || "-"}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    {/* ...botoes... */}
                     <div className="flex flex-wrap justify-center gap-4 mt-10">
                         {!editMode ? (
                             <Button type="button" variant="outline" className="px-5 py-2 font-semibold shadow" onClick={() => setEditMode(true)}>Editar</Button>
@@ -415,43 +449,4 @@ const OsView: React.FC<OsViewProps> = ({ unidade = "", VISUALIZAR_OS, messages =
     );
 };
 
-// Exemplo de uso com dados mockados
-const mockOS: VisualizarOS = {
-    id: 123,
-    DATA_SOLICITACAO: "2025-06-20T00:00:00Z",
-    PREVISAO_ENTREGA: "2025-06-25T00:00:00Z",
-    VENDEDOR: { first_name: "João" },
-    CLIENTE: { id: 1, nome: "Maria Silva" },
-    SERVICO: "Troca de Lente",
-    LABORATORIO: "LabX",
-    OD_ESF: "-1.00",
-    OD_CIL: "-0.50",
-    OD_EIXO: "90",
-    OE_ESF: "-1.25",
-    OE_CIL: "-0.75",
-    OE_EIXO: "80",
-    AD: "+2.00",
-    DNP: "32",
-    P: "62",
-    DPA: "30",
-    DIAG: "12",
-    V: "14",
-    H: "16",
-    ALT: "18",
-    ARM: "20",
-    MONTAGEM: "Completa",
-    LENTES: "Crizal",
-    ARMACAO: "Ray-Ban",
-    OBSERVACAO: "Cliente pediu urgência.",
-    FORMA_PAG: "A",
-    VALOR: "R$ 500,00",
-    QUANTIDADE_PARCELA: 1,
-    ENTRADA: "R$ 500,00",
-    STATUS: "A",
-};
-
-const PesquisaView: React.FC = () => {
-    return <OsView unidade="Unidade 1 - " VISUALIZAR_OS={mockOS} />;
-};
-
-export default PesquisaView;
+export default OsView;

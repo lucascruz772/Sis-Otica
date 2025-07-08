@@ -1,8 +1,7 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { motion } from "framer-motion";
-import { ThemeContext } from "../../ThemeContext/themecontext";
 
 // Status do Kanban
 const KANBAN_STATUS = [
@@ -34,17 +33,11 @@ const Kanban: React.FC = () => {
     const [clientesMap, setClientesMap] = useState<Record<string, string>>({});
     const [servicosMap, setServicosMap] = useState<Record<string, string>>({});
     const [usuariosMap, setUsuariosMap] = useState<Record<string, string>>({});
-    const { theme } = useContext(ThemeContext);
 
     // Referências para o board e colunas
     const boardRef = useRef<HTMLDivElement>(null);
     const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [boardMinHeight, setBoardMinHeight] = useState<number | undefined>(undefined);
-
-    // Aplica o tema escuro/claro
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-    }, [theme]);
 
     // Carrega dados auxiliares (clientes, serviços, usuários/vendedores)
     useEffect(() => {

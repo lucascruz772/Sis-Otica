@@ -26,7 +26,7 @@ const MinhasVendas: React.FC = () => {
     } = useMinhasVendas();
 
     useEffect(() => {
-        document.documentElement.classList.add('dark');
+        // Removido: document.documentElement.classList.add('dark');
         document.getElementById('eu')!.textContent = 'R$ 5.000,00';
         document.getElementById('eu_qtd')!.textContent = '20 vendas';
         document.getElementById('pm')!.textContent = 'Meta: R$ 7.000,00';

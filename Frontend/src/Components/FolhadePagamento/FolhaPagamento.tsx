@@ -231,10 +231,6 @@ const FolhaPagamento: React.FC = () => {
         setMesSelecionado(mesesDisponiveis[0]?.value || "");
     }, [anoSelecionado, funcionarioSelecionado, mesesDisponiveis]);
 
-    React.useEffect(() => {
-        document.documentElement.classList.add('dark');
-    }, []);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
