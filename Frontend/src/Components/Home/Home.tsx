@@ -1,10 +1,8 @@
 import React, { useState, type FormEvent } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
-type HomeProps = {
-    onLoginSuccess: () => void;
-};
-
-const Home: React.FC<HomeProps> = ({ onLoginSuccess }) => {
+const Home: React.FC = () => {
+    const { login } = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -18,7 +16,7 @@ const Home: React.FC<HomeProps> = ({ onLoginSuccess }) => {
         // Login e senha fixos: root
         if (username === "root" && password === "root") {
             setError(null);
-            onLoginSuccess();
+            login();
         } else {
             setError("Usuário ou senha incorretos.");
         }

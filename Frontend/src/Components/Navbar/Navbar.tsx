@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from '../../contexts/AuthContext';
 import { FaBars, FaUserCircle, FaChevronDown } from "react-icons/fa";
 
 interface NavbarProps {
@@ -20,6 +21,7 @@ const funcaoLabel = (funcao?: "G" | "C" | "V") => {
 
 const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, fullWidth }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const { logout } = useAuth();
 
     // Detecta se está em mobile (até sm)
     const [isMobile, setIsMobile] = useState(false);
@@ -96,12 +98,13 @@ const Navbar: React.FC<NavbarProps> = ({ onMinimizeSidebar, minimized, user, ful
                                 Editar Perfil
                             </a>
                             <div className="border-t border-gray-200 dark:border-gray-700" />
-                            <a
-                                href="/logout"
-                                className="block px-3 py-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs sm:text-sm"
+                            <button
+                                type="button"
+                                onClick={() => { logout(); window.location.assign('/'); }}
+                                className="block w-full text-left px-3 py-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-xs sm:text-sm"
                             >
                                 Sair
-                            </a>
+                            </button>
                         </div>
                     )}
                 </div>

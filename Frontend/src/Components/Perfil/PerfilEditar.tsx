@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FaArrowLeft, FaUserCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Mock de dados do usuário
 const mockUser = {
@@ -11,7 +12,8 @@ const mockUser = {
 };
 
 const PerfilEditar: React.FC = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    const { logout } = useAuth();
     const [nome, setNome] = useState(mockUser.nome);
     const [telefone, setTelefone] = useState(mockUser.telefone);
     const [otica, setOtica] = useState(mockUser.otica);
@@ -48,12 +50,17 @@ const PerfilEditar: React.FC = () => {
         setMsgSucesso("Perfil atualizado com sucesso!");
         setTimeout(() => {
             setMsgSucesso(null);
-            navigate(-1);
+            window.history.back();
         }, 1800);
     }
 
     function handleCancelar() {
-        navigate(-1);
+        window.history.back();
+    }
+
+    function handleSair() {
+        logout();
+        window.location.assign('/');
     }
 
     return (
@@ -173,6 +180,13 @@ const PerfilEditar: React.FC = () => {
                         onClick={handleCancelar}
                     >
                         Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded shadow"
+                        onClick={handleSair}
+                    >
+                        Sair
                     </button>
                 </div>
             </form>

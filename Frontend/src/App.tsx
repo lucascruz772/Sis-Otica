@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { Routes, Route } from "react-router-dom"
+import { useAuth } from "./contexts/AuthContext";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "./Components/Sidebar/Sidebar"
 import Home from "./Components/Home/Home"
 import Clientes from "./Components/Cliente/ClienteList"
@@ -39,10 +40,13 @@ import Cadastro from "./Components/Cadastro/Cadastro";
 import OticasForm from "./Components/Cadastro/OticasForm";
 import FuncionarioForm from "./Components/Funcionario/FuncionarioForm";
 
+
 const App: React.FC = () => {
   const [sidebarMinimized, setSidebarMinimized] = useState(false); // desktop
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false); // mobile
   const isKanban = useIsKanbanRoute();
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -66,6 +70,15 @@ const App: React.FC = () => {
 
   // Minimiza menu mobile ao clicar em item
   const handleSidebarMobileClose = () => setSidebarMobileOpen(false);
+
+  if (!isAuthenticated) {
+    // Se não autenticado e não está em /, redireciona para /
+    if (location.pathname !== "/") {
+      return <Navigate to="/" replace />;
+    }
+    // Renderiza a tela de login normalmente
+    return <Home />;
+  }
 
   return (
     <ThemeProvider>
@@ -101,8 +114,8 @@ const App: React.FC = () => {
           >
             {/* Rotas */}
             <Routes>
-              <Route path="/" element={<Home onLoginSuccess={function (): void { throw new Error("Function not implemented.") }} />} />
               <Route path="/clientes" element={<Clientes />} />
+              <Route path="/" element={<Navigate to="/clientes" replace />} />
               <Route path="/cadastro-cliente" element={<ClienteCadastro />} />
               <Route path="/cliente/:id" element={<ClienteDetalhe />} />
               <Route path="/pesquisa" element={<Pesquisa />} />

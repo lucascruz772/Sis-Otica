@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaHome, FaUsers, FaSearch, FaTasks, FaChartBar, FaBoxes, FaCashRegister, FaShoppingCart, FaMoneyCheckAlt, FaSignOutAlt, FaChevronLeft } from "react-icons/fa";
+import { FaUsers, FaSearch, FaTasks, FaChartBar, FaBoxes, FaCashRegister, FaShoppingCart, FaMoneyCheckAlt, FaSignOutAlt, FaChevronLeft } from "react-icons/fa";
 import logoPadrao from "./LOGO-NOVA-PRETA .jpg";
 import { ThemeContext } from '../../ThemeContext/themecontext';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { useOticaLogo } from '../../hooks/useOticaLogo';
 
 // Adiciona novas props para mobile
@@ -16,9 +16,18 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban = false, onItemClick, showCloseButton, onClose }) => {
-    const { isGerente } = useAuth();
+    const { logout } = useAuth();
     const { logo } = useOticaLogo();
+    // Mock: exibir Cadastro sempre (ou ajuste conforme regra de negócio)
+    const isGerente = true;
     if (minimized && hideWhenMinimizedOnKanban) return null;
+
+    // Handler para o botão sair
+    function handleSair() {
+        logout();
+        if (onItemClick) onItemClick();
+    }
+
     return (
         <>
             {/* Botão de minimizar: seta para a esquerda, fora da sidebar, sobre o overlay/drawer */}
@@ -49,8 +58,6 @@ const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban 
                     />
                 </div>
                 <nav className="flex-1 px-0 sm:px-2 py-2 sm:py-4 space-y-0 overflow-y-auto">
-                    <SidebarItem minimized={minimized} to="/" icon={<FaHome />} label="Início" onClick={onItemClick} />
-                    <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
                     <SidebarItem minimized={minimized} to="/clientes" icon={<FaUsers />} label="Clientes" onClick={onItemClick} />
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
                     <SidebarItem minimized={minimized} to="/pesquisa" icon={<FaSearch />} label="Pesquisa" onClick={onItemClick} />
@@ -74,7 +81,8 @@ const Sidebar: React.FC<SidebarProps> = ({ minimized, hideWhenMinimizedOnKanban 
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
                     <SidebarItem minimized={minimized} to="/folha-pagamento" icon={<FaMoneyCheckAlt />} label="Folha de Pagamento" onClick={onItemClick} />
                     <div className="border-b mx-1 sm:mx-2 dark:border-gray-700" />
-                    <SidebarItem minimized={minimized} to="/sair" icon={<FaSignOutAlt />} label="Sair" red onClick={onItemClick} />
+                    {/* Sair: executa logout ao clicar */}
+                    <SidebarLogoutItem minimized={minimized} icon={<FaSignOutAlt />} label="Sair" red onClick={handleSair} />
                 </nav>
                 {/* Botão de alternar tema ao final da sidebar */}
                 <ThemeToggleButton />
@@ -96,6 +104,25 @@ const SidebarItem = ({ to, icon, label, minimized, red, onClick }: { to: string,
         <span className={`hidden md:inline ${minimized ? 'hidden' : ''}`}>{!minimized && label}</span>
     </Link>
 );
+
+// SidebarLogoutItem: botão para logout, força navegação para / após logout
+const SidebarLogoutItem = ({ icon, label, minimized, red, onClick }: { icon: React.ReactNode, label: string, minimized: boolean, red?: boolean, onClick?: () => void }) => {
+    function handleLogoutClick() {
+        if (onClick) onClick(); // chama handleSair do Sidebar
+        window.location.assign('/');
+    }
+    return (
+        <button
+            type="button"
+            onClick={handleLogoutClick}
+            className={`w-full flex items-center justify-center md:justify-start gap-0 md:gap-3 px-0 md:px-4 py-2 rounded-lg font-medium transition ${red ? 'text-gray-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900' : 'text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-gray-700'} ${minimized ? 'justify-center px-0' : ''}`}
+            title={label}
+        >
+            <span className="text-lg sm:text-xl">{icon}</span>
+            <span className={`hidden md:inline ${minimized ? 'hidden' : ''}`}>{!minimized && label}</span>
+        </button>
+    );
+};
 
 // Componente para alternar tema
 const ThemeToggleButton: React.FC = () => {

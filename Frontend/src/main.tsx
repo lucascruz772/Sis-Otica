@@ -4,13 +4,16 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css';
 import { OticaLogoProvider } from './hooks/useOticaLogo';
+import { AuthProvider } from './contexts/AuthContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <OticaLogoProvider>
-        <App />
-      </OticaLogoProvider>
+      <AuthProvider>
+        <OticaLogoProvider>
+          <App />
+        </OticaLogoProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );
